@@ -84,5 +84,5 @@ See the upstream [README.md](README.md) for full documentation on the original s
 ## Related
 
 - Upstream: https://github.com/thedotmack/claude-mem
-- Cognee capture skill: `agentic-systems/research/skills-research/03-outputs/prototypes/cognee-capture/`
+- Cognee capture skill: `04-REPOSITORIES/04-REPOS-Spectri/agent-deck/canonical/skills/cognee-capture-STUB/`
 - Session summary command: `~/.claude/skills/session-summary/`
