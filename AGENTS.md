@@ -1,0 +1,88 @@
+---
+Date Created: 2026-03-10T00:00:00Z
+Date Updated: 2026-03-10T00:00:00Z
+---
+
+# agent-mem
+
+Fork of [thedotmack/claude-mem](https://github.com/thedotmack/claude-mem) (v10.5.4, AGPL-3.0).
+
+Goal: extend claude-mem from a Claude Code-only memory system to a multi-agent session memory layer supporting Claude Code, Gemini CLI, Qwen Code, and other AI coding agents.
+
+## What This Is
+
+A persistent session memory system for AI coding agents. It intercepts every tool call, compresses it using a background AI observer, stores structured observations in SQLite + Chroma, and injects relevant memories back into future sessions.
+
+See the upstream [README.md](README.md) for full documentation on the original system.
+
+## Current Setup (Production)
+
+- **Installed as**: Claude Code plugin via `/plugin install claude-mem@thedotmack`
+- **Provider**: Gemini free tier (`gemini-2.5-flash-lite`)
+- **Settings**: `~/.claude-mem/settings.json`
+- **Database**: `~/.claude-mem/claude-mem.db`
+- **Worker**: Express server on `http://127.0.0.1:37777`
+- **Viewer UI**: `http://localhost:37777`
+- **Upstream tracking**: `upstream/main` remote points to `thedotmack/claude-mem`
+
+## Architecture (Inherited)
+
+- 5 lifecycle hooks (Setup, SessionStart, UserPromptSubmit, PostToolUse, Stop)
+- Background worker service (Bun/Express on port 37777)
+- SDK agent pipeline with 3 providers (Claude SDK, Gemini, OpenRouter)
+- SQLite + Chroma storage with FTS5 full-text search
+- MCP server for search/timeline/observation tools
+- Platform adapters (Claude Code, Cursor)
+
+## Fork Roadmap
+
+### Phase 1: Enhancements (No Architecture Changes)
+
+1. **Custom summary template** — alter `plugin/modes/code.json` to match our session-summary format (session UUID, agent name, chat title, files changed, key decisions, next priorities)
+2. **Session resume link** — surface `content_session_id` in the viewer UI as a `claude --resume <id>` link
+3. **First user message capture** — store the first user prompt as a human-readable session label in `sdk_sessions`
+4. **Mercury/Qwen provider** — add a `MercuryAgent` or `QwenAgent` following the `OpenRouterAgent` pattern, pointing at local PAL bridge or direct API
+
+### Phase 2: Multi-Agent Support
+
+5. **Gemini CLI adapter** — hook adapter translating Gemini CLI lifecycle events into the same HTTP calls
+6. **Qwen Code adapter** — hook adapter for Qwen Code's lifecycle events
+7. **Context injection workarounds** — file-based rules injection per platform (following the Cursor precedent)
+8. **Platform detection** — auto-detect which CLI is calling and route through the correct adapter
+
+### Phase 3: Integration
+
+9. **Spectri integration** — consider whether claude-mem summaries can replace or supplement manual `/session-summary`
+10. **Cognee bridge** — extract entities from observations and feed them into the Cognee knowledge graph
+11. **Pieces sync** — export observations to Pieces for cross-tool persistence
+
+## Upstream Sync Strategy
+
+- Keep `upstream/main` remote for pulling upstream changes
+- Fork changes go on feature branches, merged to `main`
+- Periodically rebase/merge upstream to pick up bug fixes and new features
+- Avoid modifying core files where possible — prefer adapter patterns and configuration
+
+## Key Files
+
+| Area | Path |
+|------|------|
+| Hook handlers | `src/cli/handlers/` |
+| Worker service | `src/services/worker-service.ts` |
+| SDK agents | `src/services/worker/SDKAgent.ts`, `GeminiAgent.ts`, `OpenRouterAgent.ts` |
+| Prompts | `src/sdk/prompts.ts` |
+| Mode templates | `plugin/modes/code.json` |
+| Storage | `src/services/sqlite/` |
+| Context injection | `src/services/context/` |
+| MCP server | `src/servers/mcp-server.ts` |
+| Platform adapters | `src/services/integrations/` |
+| Settings defaults | `src/shared/SettingsDefaultsManager.ts` |
+| Installed plugin | `~/.claude/plugins/cache/thedotmack/claude-mem/10.5.4/` |
+| Settings | `~/.claude-mem/settings.json` |
+| Database | `~/.claude-mem/claude-mem.db` |
+
+## Related
+
+- Upstream: https://github.com/thedotmack/claude-mem
+- Cognee capture skill: `agentic-systems/research/skills-research/03-outputs/prototypes/cognee-capture/`
+- Session summary command: `~/.claude/skills/session-summary/`
