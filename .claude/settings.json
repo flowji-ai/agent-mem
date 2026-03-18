@@ -1,6 +1,28 @@
 {
   "env": {},
   "permissions": {
+    "allow": [
+      "Bash(find /Users/ostiimac/Forge/primary-vault/.flowji-ai -name *agent-mem* -o -name *claude-mem*)",
+      "Bash(pipx --version)",
+      "Bash(spectri --help)",
+      "Bash(echo \"exit: $?\")",
+      "Bash(spectri init:*)",
+      "Bash(spectri sync-canonical:*)",
+      "Bash(git mv:*)",
+      "Bash(bash .spectri/scripts/spectri-core/create-backlog-item.sh --type brief --short-name \"phase-1-snapshot-fields\" \"Custom mode and snapshot field redesign\")",
+      "Bash(bash .spectri/scripts/spectri-core/create-backlog-item.sh --type brief --short-name \"phase-2-ui-redesign\" \"Viewer UI redesign with sidebar and accordion cards\")",
+      "Bash(bash .spectri/scripts/spectri-core/create-backlog-item.sh --type brief --short-name \"phase-3-checkbox-curation\" \"Checkbox curation and relevance flagging\")",
+      "Bash(bash .spectri/scripts/spectri-core/create-backlog-item.sh --type brief --short-name \"phase-4-multi-agent\" \"Multi-agent UI and API key rotation\")",
+      "Bash(bash .spectri/scripts/spectri-core/create-backlog-item.sh --type brief --short-name \"phase-5-weekly-review\" \"Weekly multi-agent review workflow\")",
+      "Bash(bash .spectri/scripts/spectri-core/create-backlog-item.sh --type brief --short-name \"phase-6-team-collaboration\" \"Team collaboration and shared memory\")",
+      "Bash(git rm:*)",
+      "Bash(git log:*)",
+      "Bash(git -C /Users/ostiimac/Forge/primary-vault/04-REPOSITORIES/04-REPOS-flowji-ai/agent-mem log --oneline --all -- \"*03-feature*\")",
+      "Bash(git -C /Users/ostiimac/Forge/primary-vault/04-REPOSITORIES/04-REPOS-flowji-ai/agent-mem log --all --full-history -- \"*03-feature*\")",
+      "Bash(git -C /Users/ostiimac/Forge/primary-vault/04-REPOSITORIES/04-REPOS-flowji-ai/agent-mem log --all --full-history --name-status -- \"spectri/specs/*\")",
+      "Bash(bash .spectri/scripts/spectri-core/create-backlog-item.sh --type notes --short-name \"future-ideas\" \"Future backlog ideas not yet assigned to a phase\")",
+      "Bash(git add:*)"
+    ],
     "deny": [
       "Read(./package-lock.json)",
       "Read(./node_modules/**)",

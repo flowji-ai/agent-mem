@@ -1,3 +1,7 @@
+<!-- SPECTRI:START -->
+@./SPECTRI.md
+<!-- SPECTRI:END -->
+
 ---
 Date Created: 2026-03-10T00:00:00Z
 Date Updated: 2026-03-10T00:00:00Z
@@ -9,16 +13,49 @@ Fork of [thedotmack/claude-mem](https://github.com/thedotmack/claude-mem) (v10.5
 
 Goal: extend claude-mem from a Claude Code-only memory system to a multi-agent session memory layer supporting Claude Code, Gemini CLI, Qwen Code, and other AI coding agents.
 
+## Terminology
+
+Claude-Mem calls these "session summaries". We do not use that term. The Stop hook fires after every Claude response — not at session end. A long session can produce dozens of them. They are **snapshots**: point-in-time captures of what just happened in a response cycle.
+
+| Term | Where used | Meaning |
+|---|---|---|
+| **snapshot** | Code, DB, docs, functions | The structured memory record generated after each response |
+| **card** | UI, viewer, human-facing | How a snapshot is displayed in the viewer interface |
+| **session** | General | A single Claude Code conversation window |
+| **pod / atom** | Reserved | Not currently used — reserved if a sub-unit concept is needed later |
+
+The upstream codebase uses `session_summaries` in DB table names and `SummaryCard` in the viewer. We leave those untouched in Phase 1 to avoid breaking changes. Our custom terminology is applied in new code, prompts, and documentation.
+
+## Design Philosophy
+
+Ostii deliberately keeps chats **short and focused**, then closes them to preserve context. Agent-Mem is built around this pattern — each new session should pick up cleanly and efficiently from the last with minimal overhead. This means:
+
+- Snapshots must be lean and high-signal, not bloated
+- The trigger for snapshot generation matters — closing a chat should reliably fire the hook
+- Future agents reading these snapshots should be able to orient quickly without large token cost
+- This philosophy should be embedded in the agent skills files within the project itself
+
+## Related Project — ChatCatcher
+
+An earlier Ostii project (currently stalled) with overlapping goals: reviewing chats for global rules and patterns to feed back to agents globally. Review ChatCatcher before building to avoid duplicating work and to surface useful patterns.
+
 ## What This Is
 
-A persistent session memory system for AI coding agents. It intercepts every tool call, compresses it using a background AI observer, stores structured observations in SQLite + Chroma, and injects relevant memories back into future sessions.
+This is a standalone project, separate from Spectri (though Spectri is used for spec management within this repo).
+
+Claude-Mem is a Claude Code **plugin** — not just an MCP server. Two components must both be installed and running:
+
+1. **Core plugin** — local worker service on port `37777`, captures session observations via lifecycle hooks
+2. **MCP server layer** — exposes memory search tools to Claude so it can query and retrieve past context
+
+It intercepts every tool call, compresses it using a background AI observer, stores structured observations in SQLite + Chroma, and injects relevant memories back into future sessions.
 
 See the upstream [README.md](README.md) for full documentation on the original system.
 
 ## Current Setup (Production)
 
 - **Installed as**: Claude Code plugin via `/plugin install claude-mem@thedotmack`
-- **Provider**: Gemini free tier (`gemini-2.5-flash-lite`)
+- **Provider**: Gemini free tier (`gemini-2.5-flash-lite`) — previously used Qwen which consumed credits quickly; switched to Gemini free tier for sustainability
 - **Settings**: `~/.claude-mem/settings.json`
 - **Database**: `~/.claude-mem/claude-mem.db`
 - **Worker**: Express server on `http://127.0.0.1:37777`
