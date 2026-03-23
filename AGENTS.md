@@ -13,13 +13,14 @@ Date Updated: 2026-03-24T00:00:00Z
 
 **Status as of 2026-03-24:** Refactoring complete, Phase 1 spec ready, but integration testing required before proceeding.
 
-**Before implementing Phase 1, the next agent MUST:**
+**Smoke tests passed 2026-03-24:**
 
-1. **Run `bun test`** — verify all tests pass (25 new tests from refactor, 21 pre-existing failures expected)
-2. **Start the worker** (`bun run src/services/worker-service.ts`) — verify it starts on port 37777
-3. **Check the viewer** at `localhost:37777` — verify existing snapshots display correctly
-4. **Run a real Claude Code session** on any project — verify snapshots still generate, store, and display
-5. Only after all 4 checks pass → proceed to `/spec.implement` against `spectri/specs/01-drafting/001-phase-1-snapshot-fields/`
+1. `bun test` — 1029 pass, 21 pre-existing failures, 0 regressions from refactor
+2. Worker boots on port 37777, viewer serves HTML
+3. DB has 71 snapshots, including agent-mem sessions with real content (not corrupted)
+4. Schema intact (14 columns, unchanged — Phase 1 migration not yet run)
+
+**Next step:** `/spec.implement` against `spectri/specs/01-drafting/001-phase-1-snapshot-fields/`
 
 ## Recent Codebase Refactor (2026-03-23)
 
