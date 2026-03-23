@@ -13,7 +13,9 @@ import {
   LatestPromptResult
 } from '../../types/database.js';
 import type { PendingMessageStore } from './PendingMessageStore.js';
-import { computeObservationContentHash, findDuplicateObservation } from './observations/store.js';
+import { storeObservation as modularStoreObservation, computeObservationContentHash, findDuplicateObservation } from './observations/store.js';
+import { storeSummary as modularStoreSummary } from './summaries/store.js';
+import { SUMMARY_INSERT_COLUMNS, summaryInsertPlaceholders } from './schema/index.js';
 
 /**
  * Session data store for SDK sessions, observations, and summaries
@@ -1500,6 +1502,10 @@ export class SessionStore {
    * Assumes session already exists (created by hook)
    * Performs content-hash deduplication: skips INSERT if an identical observation exists within 30s
    */
+  /**
+   * Delegates to observations/store.ts::storeObservation() — the canonical implementation.
+   * Includes content-hash deduplication and project resolution.
+   */
   storeObservation(
     memorySessionId: string,
     project: string,
@@ -1517,51 +1523,12 @@ export class SessionStore {
     discoveryTokens: number = 0,
     overrideTimestampEpoch?: number
   ): { id: number; createdAtEpoch: number } {
-    // Use override timestamp if provided (for processing backlog messages with original timestamps)
-    const timestampEpoch = overrideTimestampEpoch ?? Date.now();
-    const timestampIso = new Date(timestampEpoch).toISOString();
-
-    // Content-hash deduplication
-    const contentHash = computeObservationContentHash(memorySessionId, observation.title, observation.narrative);
-    const existing = findDuplicateObservation(this.db, contentHash, timestampEpoch);
-    if (existing) {
-      return { id: existing.id, createdAtEpoch: existing.created_at_epoch };
-    }
-
-    const stmt = this.db.prepare(`
-      INSERT INTO observations
-      (memory_session_id, project, type, title, subtitle, facts, narrative, concepts,
-       files_read, files_modified, prompt_number, discovery_tokens, content_hash, created_at, created_at_epoch)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `);
-
-    const result = stmt.run(
-      memorySessionId,
-      project,
-      observation.type,
-      observation.title,
-      observation.subtitle,
-      JSON.stringify(observation.facts),
-      observation.narrative,
-      JSON.stringify(observation.concepts),
-      JSON.stringify(observation.files_read),
-      JSON.stringify(observation.files_modified),
-      promptNumber || null,
-      discoveryTokens,
-      contentHash,
-      timestampIso,
-      timestampEpoch
-    );
-
-    return {
-      id: Number(result.lastInsertRowid),
-      createdAtEpoch: timestampEpoch
-    };
+    return modularStoreObservation(this.db, memorySessionId, project, observation, promptNumber, discoveryTokens, overrideTimestampEpoch);
   }
 
   /**
-   * Store a session summary (from SDK parsing)
-   * Assumes session already exists - will fail with FK error if not
+   * Delegates to summaries/store.ts::storeSummary() — the canonical implementation.
+   * Uses SUMMARY_INSERT_COLUMNS for consistent column ordering.
    */
   storeSummary(
     memorySessionId: string,
@@ -1578,36 +1545,7 @@ export class SessionStore {
     discoveryTokens: number = 0,
     overrideTimestampEpoch?: number
   ): { id: number; createdAtEpoch: number } {
-    // Use override timestamp if provided (for processing backlog messages with original timestamps)
-    const timestampEpoch = overrideTimestampEpoch ?? Date.now();
-    const timestampIso = new Date(timestampEpoch).toISOString();
-
-    const stmt = this.db.prepare(`
-      INSERT INTO session_summaries
-      (memory_session_id, project, request, investigated, learned, completed,
-       next_steps, notes, prompt_number, discovery_tokens, created_at, created_at_epoch)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `);
-
-    const result = stmt.run(
-      memorySessionId,
-      project,
-      summary.request,
-      summary.investigated,
-      summary.learned,
-      summary.completed,
-      summary.next_steps,
-      summary.notes,
-      promptNumber || null,
-      discoveryTokens,
-      timestampIso,
-      timestampEpoch
-    );
-
-    return {
-      id: Number(result.lastInsertRowid),
-      createdAtEpoch: timestampEpoch
-    };
+    return modularStoreSummary(this.db, memorySessionId, project, summary, promptNumber, discoveryTokens, overrideTimestampEpoch);
   }
 
   /**
@@ -1691,12 +1629,11 @@ export class SessionStore {
       let summaryId: number | null = null;
       if (summary) {
         const summaryStmt = this.db.prepare(`
-          INSERT INTO session_summaries
-          (memory_session_id, project, request, investigated, learned, completed,
-           next_steps, notes, prompt_number, discovery_tokens, created_at, created_at_epoch)
-          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+          INSERT INTO session_summaries (${SUMMARY_INSERT_COLUMNS.join(', ')})
+          VALUES (${summaryInsertPlaceholders()})
         `);
 
+        // Parameter order must match SUMMARY_INSERT_COLUMNS exactly
         const result = summaryStmt.run(
           memorySessionId,
           project,
@@ -1705,6 +1642,8 @@ export class SessionStore {
           summary.learned,
           summary.completed,
           summary.next_steps,
+          null, // files_read
+          null, // files_edited
           summary.notes,
           promptNumber || null,
           discoveryTokens,
@@ -1811,12 +1750,11 @@ export class SessionStore {
       let summaryId: number | undefined;
       if (summary) {
         const summaryStmt = this.db.prepare(`
-          INSERT INTO session_summaries
-          (memory_session_id, project, request, investigated, learned, completed,
-           next_steps, notes, prompt_number, discovery_tokens, created_at, created_at_epoch)
-          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+          INSERT INTO session_summaries (${SUMMARY_INSERT_COLUMNS.join(', ')})
+          VALUES (${summaryInsertPlaceholders()})
         `);
 
+        // Parameter order must match SUMMARY_INSERT_COLUMNS exactly
         const result = summaryStmt.run(
           memorySessionId,
           project,
@@ -1825,6 +1763,8 @@ export class SessionStore {
           summary.learned,
           summary.completed,
           summary.next_steps,
+          null, // files_read
+          null, // files_edited
           summary.notes,
           promptNumber || null,
           discoveryTokens,
