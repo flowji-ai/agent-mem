@@ -1,0 +1,48 @@
+# the name by which the project can be referenced within Serena
+project_name: "agent-mem"
+
+# For JavaScript, use typescript — tsserver handles both
+languages:
+- typescript
+
+# the encoding used by text files in the project
+encoding: "utf-8"
+
+# line ending convention to use when writing source files.
+line_ending:
+
+# The language backend to use for this project.
+language_backend:
+
+# whether to use project's .gitignore files to ignore files
+ignore_all_files_in_gitignore: true
+
+# list of additional paths to ignore in this project.
+ignored_paths: []
+
+# whether the project is in read-only mode
+read_only: false
+
+# list of tool names to exclude.
+excluded_tools: []
+
+# list of tools to include that would otherwise be disabled (particularly optional tools that are disabled by default).
+included_optional_tools: []
+
+# fixed set of tools to use as the base tool set (if non-empty), replacing Serena's default set of tools.
+fixed_tools: []
+
+# list of mode names to that are always to be included in the set of active modes
+base_modes:
+
+# list of mode names that are to be activated by default.
+default_modes:
+
+# initial prompt for the project.
+initial_prompt: ""
+
+# time budget (seconds) per tool call for the retrieval of additional symbol information
+symbol_info_budget:
+
+# list of regex patterns which, when matched, mark a memory entry as read-only.
+read_only_memory_patterns: []
