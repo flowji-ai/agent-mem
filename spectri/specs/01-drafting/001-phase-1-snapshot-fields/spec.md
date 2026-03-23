@@ -1,6 +1,6 @@
 ---
 Date Created: 2026-03-23T09:49:26+11:00
-Date Updated: 2026-03-23T10:58:24+11:00
+Date Updated: 2026-03-23T11:07:18+11:00
 created_by: Claude Opus
 updated_by: Claude Opus
 ---
@@ -73,7 +73,7 @@ So that my injected context is high-signal and I can orient on what matters with
 
 2. **Given** an observation is generated that references a file, **When** the observer writes the narrative, **Then** the observation contains the exact full file path (e.g. `src/services/sqlite/SessionStore.ts`) and never a vague description like "a TypeScript file in the services directory."
 
-3. **Given** a snapshot is generated and a field has no meaningful content for this response cycle, **When** the snapshot is written, **Then** that field is omitted entirely — not filled with filler like "Nothing significant" or "No decisions were made."
+3. **Given** a snapshot is generated and a field has no meaningful content for this response cycle, **When** the snapshot is written, **Then** that field is omitted entirely — not filled with filler like "Nothing significant" or "No decisions were made." *(Note: This tests the same underlying requirement as Story 1 Scenario 4, from the observation quality angle. Both are governed by FR-002.)*
 
 4. **Given** Claude takes a wrong approach, hits an error, or the user reverses a direction, **When** the observer processes the session content, **Then** a `mistake` observation is generated naming the specific failed approach and what went wrong — not a generic description.
 
@@ -96,7 +96,7 @@ So that my injected context is high-signal and I can orient on what matters with
 - **FR-001**: The snapshot system MUST support structured fields: `title`, `decision_log`, `decision_trade_offs`, `constraints_log`, `mistakes`, `gotchas`, `commit_ref`, `open_questions` (pending decisions and unresolved research), `unresolved` (dangling state and interrupted work — distinct from `open_questions` in that these are tasks or threads left mid-flight, not decisions awaiting an answer).
 - **FR-002**: The snapshot system MUST omit any field that has no meaningful content for a given response cycle — no filler, placeholders, or "N/A" values.
 - **FR-003**: When multiple decisions on the same topic occur in a session, the snapshot MUST record only the final decision and note the reversal explicitly.
-- **FR-004**: The system MUST support a manual capture mechanism that the user can invoke during conversation to store curated content directly.
+- **FR-004**: The system MUST provide an MCP tool (`capture_to_mem`) that the primary conversation agent can call to store curated content directly, bypassing the background extraction agent. The user invokes this by instructing the agent to capture content; the agent calls the tool with structured fields.
 - **FR-005**: Manual captures MUST be assigned an importance rating of 9 or 10 automatically.
 - **FR-006**: Manual captures MUST suppress the automatic snapshot for the same response cycle to prevent duplicate records.
 - **FR-007**: Manual captures MUST be distinguishable from auto-extracted snapshots (e.g. via a `source` field).
@@ -108,6 +108,12 @@ So that my injected context is high-signal and I can orient on what matters with
 - **FR-013**: The database schema MUST include `importance INTEGER DEFAULT 5` and `hidden_fields TEXT` columns as scaffolding for future phases (importance scoring and checkbox curation).
 - **FR-014**: The system MUST switch the snapshot generation provider from `gemini-2.5-flash-lite` to `gemini-2.5-flash` for improved extraction quality.
 - **FR-015**: The system MUST NOT create a manual capture record when there is no substantive content to preserve. The agent must decline and inform the user rather than producing an empty or filler record.
+- **FR-016**: The extraction agent generates snapshot fields by processing Claude's last assistant message and any observations captured during the session. Observations feed into snapshot fields — e.g. `mistake` observations inform the `mistakes` snapshot field, `decision` observations inform `decision_log`. The extraction prompt must map observation content to the correct structured fields.
+
+### Deferred to Future Phases
+
+- **Semantic signal detection** (detecting frustration, decision reversals, constraint statements, and open questions from user message language) — described in the detailed brief as Task 4, marked as "research required." Deferred until the structured fields and noise reduction are validated.
+- **Retrieval ranking by importance** — Story 2 AC#4 references manual captures surfacing ahead of auto-captures. Modifying the retrieval/search ranking algorithm to use the `importance` field is deferred to a future phase. Phase 1 stores the importance value but does not change retrieval ordering.
 
 ### Key Entities
 
@@ -120,7 +126,7 @@ So that my injected context is high-signal and I can orient on what matters with
 
 ### Measurable Outcomes
 
-- **SC-001**: When an agent searches for a past decision, the `decision_log` field surfaces it directly — agents no longer need to parse prose to find decisions.
+- **SC-001**: A query for a known decision returns results where the decision text appears in the `decision_log` field, without requiring the agent to parse narrative text or other fields to find it.
 - **SC-002**: Discovery observation cards no longer appear in the viewer for routine file reads and directory listings.
 - **SC-003**: A user can say "capture this" during a conversation and have the content stored as a high-priority memory record within the same response cycle.
 - **SC-004**: Snapshot fields with no meaningful content are absent from the stored record — no filler text exists in the database.
