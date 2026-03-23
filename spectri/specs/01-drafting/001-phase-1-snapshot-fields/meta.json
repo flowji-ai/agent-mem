@@ -21,12 +21,17 @@
       "status": "planned",
       "created": null,
       "created_by": null,
-      "last_updated": null,
-      "updated_by": null
+      "last_updated": "2026-03-23T15:56:54+11:00",
+      "updated_by": "Claude Opus"
     },
     "implementation-summaries/2026-03-23-1308_plan-md.md": {
       "status": "completed",
       "created": "2026-03-23T13:08:05+11:00",
+      "created_by": "Claude Opus"
+    },
+    "implementation-summaries/2026-03-23-1559_tasks-md.md": {
+      "status": "completed",
+      "created": "2026-03-23T15:59:14+11:00",
       "created_by": "Claude Opus"
     }
   },
