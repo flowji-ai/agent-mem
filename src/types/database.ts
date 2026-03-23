@@ -3,6 +3,9 @@
  * Provides type safety for bun:sqlite query results
  */
 
+// Re-export canonical row type as SessionSummaryRecord for backward compatibility
+export type { SessionSummaryRow as SessionSummaryRecord } from '../services/sqlite/types.js';
+
 /**
  * Schema information from sqlite3 PRAGMA table_info
  */
@@ -66,7 +69,7 @@ export interface ObservationRecord {
   memory_session_id: string;
   project: string;
   text: string | null;
-  type: 'decision' | 'bugfix' | 'feature' | 'refactor' | 'discovery' | 'change';
+  type: 'decision' | 'bugfix' | 'feature' | 'refactor' | 'discovery' | 'change' | 'mistake';
   created_at: string;
   created_at_epoch: number;
   title?: string;
@@ -76,23 +79,7 @@ export interface ObservationRecord {
   discovery_tokens?: number;
 }
 
-/**
- * Session Summary database record
- */
-export interface SessionSummaryRecord {
-  id: number;
-  memory_session_id: string;
-  project: string;
-  request: string | null;
-  investigated: string | null;
-  learned: string | null;
-  completed: string | null;
-  next_steps: string | null;
-  created_at: string;
-  created_at_epoch: number;
-  prompt_number?: number;
-  discovery_tokens?: number;
-}
+// SessionSummaryRecord re-exported from sqlite/types.ts above
 
 /**
  * User Prompt database record

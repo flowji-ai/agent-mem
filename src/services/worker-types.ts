@@ -175,6 +175,7 @@ export interface DBSession {
 // Re-export the actual SDK type to ensure compatibility
 export type { SDKUserMessage } from '@anthropic-ai/claude-agent-sdk';
 
+// Viewer/API projection of an observation (different shape from sdk/parser.ts ParsedObservation)
 export interface ParsedObservation {
   type: string;
   title: string;
@@ -184,14 +185,8 @@ export interface ParsedObservation {
   files: string[];
 }
 
-export interface ParsedSummary {
-  request: string | null;
-  investigated: string | null;
-  learned: string | null;
-  completed: string | null;
-  next_steps: string | null;
-  notes: string | null;
-}
+// Re-export canonical ParsedSummary (identical to sdk/parser.ts)
+export type { ParsedSummary } from '../sdk/parser.js';
 
 // ============================================================================
 // Utility Types

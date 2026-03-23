@@ -2,6 +2,8 @@
  * Context Types - Shared types for context generation module
  */
 
+import type { SessionSummaryRow } from '../sqlite/types.js';
+
 /**
  * Input parameters for context generation
  */
@@ -63,21 +65,12 @@ export interface Observation {
 }
 
 /**
- * Session summary record from database
+ * Session summary record from database (context projection).
+ * Derived from SessionSummaryRow with project made optional for multi-project queries.
  */
-export interface SessionSummary {
-  id: number;
-  memory_session_id: string;
-  request: string | null;
-  investigated: string | null;
-  learned: string | null;
-  completed: string | null;
-  next_steps: string | null;
-  created_at: string;
-  created_at_epoch: number;
-  /** Project this summary belongs to (for multi-project queries) */
-  project?: string;
-}
+export type SessionSummary =
+  Pick<SessionSummaryRow, 'id' | 'memory_session_id' | 'request' | 'investigated' | 'learned' | 'completed' | 'next_steps' | 'created_at' | 'created_at_epoch'>
+  & { project?: string };
 
 /**
  * Summary with timeline display info
