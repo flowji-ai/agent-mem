@@ -11,6 +11,7 @@ import { logger } from '../../utils/logger.js';
 import type { ObservationInput } from './observations/types.js';
 import type { SummaryInput } from './summaries/types.js';
 import { computeObservationContentHash, findDuplicateObservation } from './observations/store.js';
+import { SUMMARY_INSERT_COLUMNS, summaryInsertPlaceholders } from './schema/index.js';
 
 /**
  * Result from storeObservations / storeObservationsAndMarkComplete transaction
@@ -104,12 +105,11 @@ export function storeObservationsAndMarkComplete(
     let summaryId: number | null = null;
     if (summary) {
       const summaryStmt = db.prepare(`
-        INSERT INTO session_summaries
-        (memory_session_id, project, request, investigated, learned, completed,
-         next_steps, notes, prompt_number, discovery_tokens, created_at, created_at_epoch)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO session_summaries (${SUMMARY_INSERT_COLUMNS.join(', ')})
+        VALUES (${summaryInsertPlaceholders()})
       `);
 
+      // Parameter order must match SUMMARY_INSERT_COLUMNS exactly
       const result = summaryStmt.run(
         memorySessionId,
         project,
@@ -118,6 +118,8 @@ export function storeObservationsAndMarkComplete(
         summary.learned,
         summary.completed,
         summary.next_steps,
+        null, // files_read
+        null, // files_edited
         summary.notes,
         promptNumber || null,
         discoveryTokens,
@@ -223,12 +225,11 @@ export function storeObservations(
     let summaryId: number | null = null;
     if (summary) {
       const summaryStmt = db.prepare(`
-        INSERT INTO session_summaries
-        (memory_session_id, project, request, investigated, learned, completed,
-         next_steps, notes, prompt_number, discovery_tokens, created_at, created_at_epoch)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO session_summaries (${SUMMARY_INSERT_COLUMNS.join(', ')})
+        VALUES (${summaryInsertPlaceholders()})
       `);
 
+      // Parameter order must match SUMMARY_INSERT_COLUMNS exactly
       const result = summaryStmt.run(
         memorySessionId,
         project,
@@ -237,6 +238,8 @@ export function storeObservations(
         summary.learned,
         summary.completed,
         summary.next_steps,
+        null, // files_read
+        null, // files_edited
         summary.notes,
         promptNumber || null,
         discoveryTokens,

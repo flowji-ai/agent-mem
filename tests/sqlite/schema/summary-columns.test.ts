@@ -139,6 +139,68 @@ describe('SELECT Column Regression', () => {
   });
 });
 
+describe('INSERT Roundtrip', () => {
+  it('INSERT using SUMMARY_INSERT_COLUMNS stores and retrieves all fields correctly', () => {
+    const db = new Database(':memory:');
+    try {
+      db.run(`
+        CREATE TABLE session_summaries (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          memory_session_id TEXT NOT NULL,
+          project TEXT NOT NULL,
+          request TEXT,
+          investigated TEXT,
+          learned TEXT,
+          completed TEXT,
+          next_steps TEXT,
+          files_read TEXT,
+          files_edited TEXT,
+          notes TEXT,
+          prompt_number INTEGER,
+          discovery_tokens INTEGER NOT NULL DEFAULT 0,
+          created_at TEXT NOT NULL,
+          created_at_epoch INTEGER NOT NULL
+        )
+      `);
+
+      const testValues = {
+        memory_session_id: 'test-session-123',
+        project: '/test/project',
+        request: 'test_request',
+        investigated: 'test_investigated',
+        learned: 'test_learned',
+        completed: 'test_completed',
+        next_steps: 'test_next_steps',
+        files_read: '["file1.ts"]',
+        files_edited: '["file2.ts"]',
+        notes: 'test_notes',
+        prompt_number: 5,
+        discovery_tokens: 1234,
+        created_at: '2026-01-01T00:00:00.000Z',
+        created_at_epoch: 1767225600000,
+      };
+
+      // Build INSERT using central constants
+      const cols = SUMMARY_INSERT_COLUMNS.join(', ');
+      const placeholders = summaryInsertPlaceholders();
+      const params = SUMMARY_INSERT_COLUMNS.map(col => testValues[col as keyof typeof testValues]);
+
+      db.prepare(`INSERT INTO session_summaries (${cols}) VALUES (${placeholders})`).run(...params);
+
+      // Read back and verify every field
+      const row = db.prepare('SELECT * FROM session_summaries WHERE id = 1').get() as Record<string, unknown>;
+      expect(row).toBeDefined();
+
+      for (const col of SUMMARY_INSERT_COLUMNS) {
+        expect(row[col]).toBe(testValues[col as keyof typeof testValues]);
+      }
+      expect(row.id).toBe(1);
+    } finally {
+      db.close();
+    }
+  });
+});
+
 describe('Schema Roundtrip', () => {
   it('PRAGMA table_info columns match SUMMARY_ALL_COLUMNS', () => {
     const db = new Database(':memory:');

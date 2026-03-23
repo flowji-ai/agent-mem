@@ -4,6 +4,7 @@
 import type { Database } from 'bun:sqlite';
 import { logger } from '../../../utils/logger.js';
 import type { SummaryInput, StoreSummaryResult } from './types.js';
+import { SUMMARY_INSERT_COLUMNS, summaryInsertPlaceholders } from '../schema/index.js';
 
 /**
  * Store a session summary (from SDK parsing)
@@ -31,12 +32,11 @@ export function storeSummary(
   const timestampIso = new Date(timestampEpoch).toISOString();
 
   const stmt = db.prepare(`
-    INSERT INTO session_summaries
-    (memory_session_id, project, request, investigated, learned, completed,
-     next_steps, notes, prompt_number, discovery_tokens, created_at, created_at_epoch)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO session_summaries (${SUMMARY_INSERT_COLUMNS.join(', ')})
+    VALUES (${summaryInsertPlaceholders()})
   `);
 
+  // Parameter order must match SUMMARY_INSERT_COLUMNS exactly
   const result = stmt.run(
     memorySessionId,
     project,
@@ -45,6 +45,8 @@ export function storeSummary(
     summary.learned,
     summary.completed,
     summary.next_steps,
+    null, // files_read — populated by import, not live capture
+    null, // files_edited — populated by import, not live capture
     summary.notes,
     promptNumber || null,
     discoveryTokens,

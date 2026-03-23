@@ -4,6 +4,7 @@
 
 import { Database } from 'bun:sqlite';
 import { logger } from '../../../utils/logger.js';
+import { SUMMARY_INSERT_COLUMNS, summaryInsertPlaceholders } from '../schema/index.js';
 
 export interface ImportResult {
   imported: boolean;
@@ -92,13 +93,11 @@ export function importSessionSummary(
   }
 
   const stmt = db.prepare(`
-    INSERT INTO session_summaries (
-      memory_session_id, project, request, investigated, learned,
-      completed, next_steps, files_read, files_edited, notes,
-      prompt_number, discovery_tokens, created_at, created_at_epoch
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO session_summaries (${SUMMARY_INSERT_COLUMNS.join(', ')})
+    VALUES (${summaryInsertPlaceholders()})
   `);
 
+  // Parameter order must match SUMMARY_INSERT_COLUMNS exactly
   const result = stmt.run(
     summary.memory_session_id,
     summary.project,
