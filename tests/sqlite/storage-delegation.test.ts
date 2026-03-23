@@ -103,7 +103,8 @@ describe('Storage Delegation Equivalence', () => {
       expect(row.type).toBe('discovery');
       expect(row.title).toBe(input.title);
       expect(row.narrative).toBe(input.narrative);
-      expect(row.content_hash).toBeTruthy(); // content-hash dedup is present
+      expect(typeof row.content_hash).toBe('string');
+      expect((row.content_hash as string).length).toBeGreaterThan(0); // content-hash dedup produces a non-empty string
     });
 
     it('deduplicates within 30s window', () => {

@@ -4,10 +4,37 @@
 
 ---
 Date Created: 2026-03-10T00:00:00Z
-Date Updated: 2026-03-10T00:00:00Z
+Date Updated: 2026-03-24T00:00:00Z
 ---
 
 # agent-mem
+
+## Next Session — Start Here
+
+**Status as of 2026-03-24:** Refactoring complete, Phase 1 spec ready, but integration testing required before proceeding.
+
+**Before implementing Phase 1, the next agent MUST:**
+
+1. **Run `bun test`** — verify all tests pass (25 new tests from refactor, 21 pre-existing failures expected)
+2. **Start the worker** (`bun run src/services/worker-service.ts`) — verify it starts on port 37777
+3. **Check the viewer** at `localhost:37777` — verify existing snapshots display correctly
+4. **Run a real Claude Code session** on any project — verify snapshots still generate, store, and display
+5. Only after all 4 checks pass → proceed to `/spec.implement` against `spectri/specs/01-drafting/001-phase-1-snapshot-fields/`
+
+## Recent Codebase Refactor (2026-03-23)
+
+A 2-plan, 8-step refactoring centralised hardcoded column lists, types, and storage logic across the codebase:
+- **Created** `src/services/sqlite/schema/` — single source of truth for all column definitions, SQL helpers, and FTS DDL
+- **Consolidated** 11 duplicate type definitions into canonical types with `Pick<>` derivation
+- **Replaced** 27 hardcoded column lists (SELECT, INSERT) with central constants
+- **Delegated** duplicate `storeSummary()`/`storeObservation()` in SessionStore to modular functions
+- **Updated** downstream consumers: ResponseProcessor, ChromaSync, PaginationHelper, SSE types
+- **Added** 25 new tests covering schema constants, SQL helpers, storage delegation, and consumer integration
+- **Result:** Adding new columns now requires updating 2 files + 1 migration instead of 27+ edits across 15 files
+
+This refactor has NOT yet been integration-tested with a live claude-mem session. The next session must verify it works end-to-end before starting Phase 1.
+
+---
 
 Fork of [thedotmack/claude-mem](https://github.com/thedotmack/claude-mem) (v10.5.4, AGPL-3.0).
 
