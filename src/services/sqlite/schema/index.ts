@@ -16,6 +16,7 @@ export {
   summarySelectCols,
   summaryInsertPlaceholders,
   summaryFTSCreateSQL,
+  summaryFTSTriggersSQL,
 } from './summary-columns.js';
 
 export {

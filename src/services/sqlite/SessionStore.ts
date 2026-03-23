@@ -15,7 +15,7 @@ import {
 import type { PendingMessageStore } from './PendingMessageStore.js';
 import { storeObservation as modularStoreObservation, computeObservationContentHash, findDuplicateObservation } from './observations/store.js';
 import { storeSummary as modularStoreSummary } from './summaries/store.js';
-import { SUMMARY_INSERT_COLUMNS, summaryInsertPlaceholders } from './schema/index.js';
+import { SUMMARY_INSERT_COLUMNS, summaryInsertPlaceholders, summaryFTSTriggersSQL } from './schema/index.js';
 
 /**
  * Session data store for SDK sessions, observations, and summaries
@@ -800,27 +800,10 @@ export class SessionStore {
         CREATE INDEX idx_session_summaries_created ON session_summaries(created_at_epoch DESC);
       `);
 
-      // Recreate session_summaries FTS triggers if FTS table exists
+      // Recreate session_summaries FTS triggers if FTS table exists (using central schema)
       const hasSummariesFTS = (this.db.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='session_summaries_fts'").all() as { name: string }[]).length > 0;
       if (hasSummariesFTS) {
-        this.db.run(`
-          CREATE TRIGGER IF NOT EXISTS session_summaries_ai AFTER INSERT ON session_summaries BEGIN
-            INSERT INTO session_summaries_fts(rowid, request, investigated, learned, completed, next_steps, notes)
-            VALUES (new.id, new.request, new.investigated, new.learned, new.completed, new.next_steps, new.notes);
-          END;
-
-          CREATE TRIGGER IF NOT EXISTS session_summaries_ad AFTER DELETE ON session_summaries BEGIN
-            INSERT INTO session_summaries_fts(session_summaries_fts, rowid, request, investigated, learned, completed, next_steps, notes)
-            VALUES('delete', old.id, old.request, old.investigated, old.learned, old.completed, old.next_steps, old.notes);
-          END;
-
-          CREATE TRIGGER IF NOT EXISTS session_summaries_au AFTER UPDATE ON session_summaries BEGIN
-            INSERT INTO session_summaries_fts(session_summaries_fts, rowid, request, investigated, learned, completed, next_steps, notes)
-            VALUES('delete', old.id, old.request, old.investigated, old.learned, old.completed, old.next_steps, old.notes);
-            INSERT INTO session_summaries_fts(rowid, request, investigated, learned, completed, next_steps, notes)
-            VALUES (new.id, new.request, new.investigated, new.learned, new.completed, new.next_steps, new.notes);
-          END;
-        `);
+        this.db.run(summaryFTSTriggersSQL());
       }
 
       // Record migration

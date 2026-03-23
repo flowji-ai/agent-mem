@@ -3,6 +3,7 @@ import { TableNameRow } from '../../types/database.js';
 import { DATA_DIR, DB_PATH, ensureDir } from '../../shared/paths.js';
 import { logger } from '../../utils/logger.js';
 import { isDirectChild } from '../../shared/path-utils.js';
+import { SUMMARY_FTS_COLUMNS, summaryFTSCreateSQL, summaryFTSTriggersSQL } from './schema/index.js';
 import {
   ObservationSearchResult,
   SessionSummarySearchResult,
@@ -113,46 +114,19 @@ export class SessionSearch {
         END;
       `);
 
-      // Create session_summaries_fts virtual table
-      this.db.run(`
-        CREATE VIRTUAL TABLE IF NOT EXISTS session_summaries_fts USING fts5(
-          request,
-          investigated,
-          learned,
-          completed,
-          next_steps,
-          notes,
-          content='session_summaries',
-          content_rowid='id'
-        );
-      `);
+      // Create session_summaries_fts virtual table using central schema
+      this.db.run(summaryFTSCreateSQL());
 
       // Populate with existing data
+      const ftsCols = SUMMARY_FTS_COLUMNS.join(', ');
       this.db.run(`
-        INSERT INTO session_summaries_fts(rowid, request, investigated, learned, completed, next_steps, notes)
-        SELECT id, request, investigated, learned, completed, next_steps, notes
+        INSERT INTO session_summaries_fts(rowid, ${ftsCols})
+        SELECT id, ${ftsCols}
         FROM session_summaries;
       `);
 
-      // Create triggers for session_summaries
-      this.db.run(`
-        CREATE TRIGGER IF NOT EXISTS session_summaries_ai AFTER INSERT ON session_summaries BEGIN
-          INSERT INTO session_summaries_fts(rowid, request, investigated, learned, completed, next_steps, notes)
-          VALUES (new.id, new.request, new.investigated, new.learned, new.completed, new.next_steps, new.notes);
-        END;
-
-        CREATE TRIGGER IF NOT EXISTS session_summaries_ad AFTER DELETE ON session_summaries BEGIN
-          INSERT INTO session_summaries_fts(session_summaries_fts, rowid, request, investigated, learned, completed, next_steps, notes)
-          VALUES('delete', old.id, old.request, old.investigated, old.learned, old.completed, old.next_steps, old.notes);
-        END;
-
-        CREATE TRIGGER IF NOT EXISTS session_summaries_au AFTER UPDATE ON session_summaries BEGIN
-          INSERT INTO session_summaries_fts(session_summaries_fts, rowid, request, investigated, learned, completed, next_steps, notes)
-          VALUES('delete', old.id, old.request, old.investigated, old.learned, old.completed, old.next_steps, old.notes);
-          INSERT INTO session_summaries_fts(rowid, request, investigated, learned, completed, next_steps, notes)
-          VALUES (new.id, new.request, new.investigated, new.learned, new.completed, new.next_steps, new.notes);
-        END;
-      `);
+      // Create triggers for session_summaries using central schema
+      this.db.run(summaryFTSTriggersSQL());
 
       logger.info('DB', 'FTS5 tables created successfully');
     } catch (error) {

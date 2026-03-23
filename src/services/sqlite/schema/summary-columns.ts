@@ -103,3 +103,32 @@ export function summaryFTSCreateSQL(): string {
   content_rowid='id'
 )`;
 }
+
+/**
+ * Generate FTS5 sync triggers for session_summaries → session_summaries_fts.
+ * Handles INSERT, DELETE, and UPDATE operations to keep FTS in sync.
+ */
+export function summaryFTSTriggersSQL(): string {
+  const ftsCols = SUMMARY_FTS_COLUMNS.join(', ');
+  const newRefs = SUMMARY_FTS_COLUMNS.map(c => `new.${c}`).join(', ');
+  const oldRefs = SUMMARY_FTS_COLUMNS.map(c => `old.${c}`).join(', ');
+
+  return `
+    CREATE TRIGGER IF NOT EXISTS session_summaries_ai AFTER INSERT ON session_summaries BEGIN
+      INSERT INTO session_summaries_fts(rowid, ${ftsCols})
+      VALUES (new.id, ${newRefs});
+    END;
+
+    CREATE TRIGGER IF NOT EXISTS session_summaries_ad AFTER DELETE ON session_summaries BEGIN
+      INSERT INTO session_summaries_fts(session_summaries_fts, rowid, ${ftsCols})
+      VALUES('delete', old.id, ${oldRefs});
+    END;
+
+    CREATE TRIGGER IF NOT EXISTS session_summaries_au AFTER UPDATE ON session_summaries BEGIN
+      INSERT INTO session_summaries_fts(session_summaries_fts, rowid, ${ftsCols})
+      VALUES('delete', old.id, ${oldRefs});
+      INSERT INTO session_summaries_fts(rowid, ${ftsCols})
+      VALUES (new.id, ${newRefs});
+    END;
+  `;
+}
