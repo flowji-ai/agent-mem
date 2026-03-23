@@ -5,6 +5,7 @@ import type { Database } from 'bun:sqlite';
 import { logger } from '../../../utils/logger.js';
 import type { SessionSummaryRecord } from '../../../types/database.js';
 import type { SessionSummary, GetByIdsOptions } from './types.js';
+import { summarySelectCols, SUMMARY_SESSION_SELECT } from '../schema/index.js';
 
 /**
  * Get summary for a specific session
@@ -18,10 +19,7 @@ export function getSummaryForSession(
   memorySessionId: string
 ): SessionSummary | null {
   const stmt = db.prepare(`
-    SELECT
-      request, investigated, learned, completed, next_steps,
-      files_read, files_edited, notes, prompt_number, created_at,
-      created_at_epoch
+    SELECT ${summarySelectCols(SUMMARY_SESSION_SELECT)}
     FROM session_summaries
     WHERE memory_session_id = ?
     ORDER BY created_at_epoch DESC

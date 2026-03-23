@@ -18,6 +18,7 @@ import type {
   PriorMessages,
 } from './types.js';
 import { SUMMARY_LOOKAHEAD } from './types.js';
+import { summarySelectCols, SUMMARY_CONTEXT_SELECT, SUMMARY_CONTEXT_MULTI_SELECT } from '../sqlite/schema/index.js';
 
 /**
  * Query observations from database with type and concept filtering
@@ -58,7 +59,7 @@ export function querySummaries(
   config: ContextConfig
 ): SessionSummary[] {
   return db.db.prepare(`
-    SELECT id, memory_session_id, request, investigated, learned, completed, next_steps, created_at, created_at_epoch
+    SELECT ${summarySelectCols(SUMMARY_CONTEXT_SELECT)}
     FROM session_summaries
     WHERE project = ?
     ORDER BY created_at_epoch DESC
@@ -117,7 +118,7 @@ export function querySummariesMulti(
   const projectPlaceholders = projects.map(() => '?').join(',');
 
   return db.db.prepare(`
-    SELECT id, memory_session_id, request, investigated, learned, completed, next_steps, created_at, created_at_epoch, project
+    SELECT ${summarySelectCols(SUMMARY_CONTEXT_MULTI_SELECT)}
     FROM session_summaries
     WHERE project IN (${projectPlaceholders})
     ORDER BY created_at_epoch DESC

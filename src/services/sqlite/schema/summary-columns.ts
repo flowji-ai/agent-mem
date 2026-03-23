@@ -36,6 +36,45 @@ export const SUMMARY_INSERT_COLUMNS = [
   'created_at', 'created_at_epoch',
 ] as const;
 
+// ── Named column subsets for common SELECT projections ──
+
+/** getSummaryForSession: content + prompt_number + timestamps (no id/memory_session_id/project) */
+export const SUMMARY_SESSION_SELECT = [
+  'request', 'investigated', 'learned', 'completed', 'next_steps',
+  'files_read', 'files_edited', 'notes', 'prompt_number', 'created_at', 'created_at_epoch',
+] as const;
+
+/** getRecentSummaries: content + prompt_number + created_at (no epoch) */
+export const SUMMARY_RECENT_SELECT = [
+  'request', 'investigated', 'learned', 'completed', 'next_steps',
+  'files_read', 'files_edited', 'notes', 'prompt_number', 'created_at',
+] as const;
+
+/** getRecentSummariesWithSessionInfo: minimal fields for context display */
+export const SUMMARY_SESSION_INFO_SELECT = [
+  'memory_session_id', 'request', 'learned', 'completed', 'next_steps',
+  'prompt_number', 'created_at',
+] as const;
+
+/** getAllRecentSummaries: full summary for web UI */
+export const SUMMARY_FULL_SELECT = [
+  'id', 'request', 'investigated', 'learned', 'completed', 'next_steps',
+  'files_read', 'files_edited', 'notes', 'project', 'prompt_number',
+  'created_at', 'created_at_epoch',
+] as const;
+
+/** querySummaries: context compiler single-project */
+export const SUMMARY_CONTEXT_SELECT = [
+  'id', 'memory_session_id', 'request', 'investigated', 'learned', 'completed',
+  'next_steps', 'created_at', 'created_at_epoch',
+] as const;
+
+/** querySummariesMulti: context compiler multi-project (adds project) */
+export const SUMMARY_CONTEXT_MULTI_SELECT = [
+  'id', 'memory_session_id', 'request', 'investigated', 'learned', 'completed',
+  'next_steps', 'created_at', 'created_at_epoch', 'project',
+] as const;
+
 /**
  * Generate a comma-separated SELECT column list.
  * Defaults to all columns if no subset provided.

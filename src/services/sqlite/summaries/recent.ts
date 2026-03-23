@@ -4,6 +4,7 @@
 import type { Database } from 'bun:sqlite';
 import { logger } from '../../../utils/logger.js';
 import type { RecentSummary, SummaryWithSessionInfo, FullSummary } from './types.js';
+import { summarySelectCols, SUMMARY_RECENT_SELECT, SUMMARY_SESSION_INFO_SELECT, SUMMARY_FULL_SELECT } from '../schema/index.js';
 
 /**
  * Get recent session summaries for a project
@@ -18,9 +19,7 @@ export function getRecentSummaries(
   limit: number = 10
 ): RecentSummary[] {
   const stmt = db.prepare(`
-    SELECT
-      request, investigated, learned, completed, next_steps,
-      files_read, files_edited, notes, prompt_number, created_at
+    SELECT ${summarySelectCols(SUMMARY_RECENT_SELECT)}
     FROM session_summaries
     WHERE project = ?
     ORDER BY created_at_epoch DESC
@@ -43,9 +42,7 @@ export function getRecentSummariesWithSessionInfo(
   limit: number = 3
 ): SummaryWithSessionInfo[] {
   const stmt = db.prepare(`
-    SELECT
-      memory_session_id, request, learned, completed, next_steps,
-      prompt_number, created_at
+    SELECT ${summarySelectCols(SUMMARY_SESSION_INFO_SELECT)}
     FROM session_summaries
     WHERE project = ?
     ORDER BY created_at_epoch DESC
@@ -66,9 +63,7 @@ export function getAllRecentSummaries(
   limit: number = 50
 ): FullSummary[] {
   const stmt = db.prepare(`
-    SELECT id, request, investigated, learned, completed, next_steps,
-           files_read, files_edited, notes, project, prompt_number,
-           created_at, created_at_epoch
+    SELECT ${summarySelectCols(SUMMARY_FULL_SELECT)}
     FROM session_summaries
     ORDER BY created_at_epoch DESC
     LIMIT ?

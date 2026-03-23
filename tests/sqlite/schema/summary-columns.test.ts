@@ -98,6 +98,47 @@ describe('Summary SQL Helpers', () => {
   });
 });
 
+describe('SELECT Column Regression', () => {
+  // Each test captures the exact column string from the original hardcoded query
+  // and verifies summarySelectCols() with the same subset produces an identical string.
+
+  it('getSummaryForSession columns match', () => {
+    const original = 'request, investigated, learned, completed, next_steps, files_read, files_edited, notes, prompt_number, created_at, created_at_epoch';
+    const cols = ['request', 'investigated', 'learned', 'completed', 'next_steps', 'files_read', 'files_edited', 'notes', 'prompt_number', 'created_at', 'created_at_epoch'] as const;
+    expect(summarySelectCols(cols)).toBe(original);
+  });
+
+  it('getRecentSummaries columns match', () => {
+    const original = 'request, investigated, learned, completed, next_steps, files_read, files_edited, notes, prompt_number, created_at';
+    const cols = ['request', 'investigated', 'learned', 'completed', 'next_steps', 'files_read', 'files_edited', 'notes', 'prompt_number', 'created_at'] as const;
+    expect(summarySelectCols(cols)).toBe(original);
+  });
+
+  it('getRecentSummariesWithSessionInfo columns match', () => {
+    const original = 'memory_session_id, request, learned, completed, next_steps, prompt_number, created_at';
+    const cols = ['memory_session_id', 'request', 'learned', 'completed', 'next_steps', 'prompt_number', 'created_at'] as const;
+    expect(summarySelectCols(cols)).toBe(original);
+  });
+
+  it('getAllRecentSummaries columns match', () => {
+    const original = 'id, request, investigated, learned, completed, next_steps, files_read, files_edited, notes, project, prompt_number, created_at, created_at_epoch';
+    const cols = ['id', 'request', 'investigated', 'learned', 'completed', 'next_steps', 'files_read', 'files_edited', 'notes', 'project', 'prompt_number', 'created_at', 'created_at_epoch'] as const;
+    expect(summarySelectCols(cols)).toBe(original);
+  });
+
+  it('querySummaries columns match', () => {
+    const original = 'id, memory_session_id, request, investigated, learned, completed, next_steps, created_at, created_at_epoch';
+    const cols = ['id', 'memory_session_id', 'request', 'investigated', 'learned', 'completed', 'next_steps', 'created_at', 'created_at_epoch'] as const;
+    expect(summarySelectCols(cols)).toBe(original);
+  });
+
+  it('querySummariesMulti columns match', () => {
+    const original = 'id, memory_session_id, request, investigated, learned, completed, next_steps, created_at, created_at_epoch, project';
+    const cols = ['id', 'memory_session_id', 'request', 'investigated', 'learned', 'completed', 'next_steps', 'created_at', 'created_at_epoch', 'project'] as const;
+    expect(summarySelectCols(cols)).toBe(original);
+  });
+});
+
 describe('Schema Roundtrip', () => {
   it('PRAGMA table_info columns match SUMMARY_ALL_COLUMNS', () => {
     const db = new Database(':memory:');
