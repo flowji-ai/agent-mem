@@ -24,6 +24,21 @@ This plan covers the **mechanical substitution** work: creating the central sche
 - All existing tests pass (`bun test`)
 - Working tree is clean
 
+## Step 0: Orient
+
+Before writing any code, read these files to understand the current state:
+- `src/services/sqlite/summaries/types.ts` — current type definitions (SummaryInput, SessionSummary, etc.)
+- `src/services/sqlite/types.ts` — SessionSummaryRow (the DB row type)
+- `src/types/database.ts` — SessionSummaryRecord, ObservationRecord type union
+- `src/services/sqlite/summaries/store.ts` — current storeSummary INSERT
+- `src/services/sqlite/summaries/get.ts` — current SELECT queries
+- `src/sdk/parser.ts` — ParsedSummary interface
+- `src/services/context/types.ts` — duplicate SessionSummary
+- `src/services/worker-types.ts` — duplicate Summary and ParsedSummary
+- `AGENTS.md` — project context, terminology, architecture
+
+This gives you the full picture of what's duplicated and what the canonical definitions look like.
+
 ## Steps
 
 ### Step 1: Create central schema constants
@@ -38,7 +53,7 @@ This plan covers the **mechanical substitution** work: creating the central sche
 - `SUMMARY_META_COLUMNS` — `['id', 'memory_session_id', 'project', 'prompt_number', 'discovery_tokens', 'created_at', 'created_at_epoch']`
 - `SUMMARY_ALL_COLUMNS` — combined (meta + content)
 - `SUMMARY_FTS_COLUMNS` — `['request', 'investigated', 'learned', 'completed', 'next_steps', 'notes']` (subset for FTS5)
-- `SUMMARY_INSERT_COLUMNS` — columns used for INSERT (meta except `id`, plus all content)
+- `SUMMARY_INSERT_COLUMNS` — `['memory_session_id', 'project', 'request', 'investigated', 'learned', 'completed', 'next_steps', 'files_read', 'files_edited', 'notes', 'prompt_number', 'discovery_tokens', 'created_at', 'created_at_epoch']` (meta except `id` which is autoincrement, plus all content)
 - `summarySelectCols(cols: string[])` — generates `"col1, col2, col3"` from array
 - `summaryInsertPlaceholders()` — generates `"(?, ?, ?, ...)"` matching INSERT_COLUMNS length
 - `summaryFTSCreateSQL(tableName: string)` — generates FTS5 virtual table DDL + triggers
