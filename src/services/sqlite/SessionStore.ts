@@ -15,6 +15,7 @@ import {
 import type { PendingMessageStore } from './PendingMessageStore.js';
 import { storeObservation as modularStoreObservation, computeObservationContentHash, findDuplicateObservation } from './observations/store.js';
 import { storeSummary as modularStoreSummary } from './summaries/store.js';
+import { importSessionSummary as modularImportSessionSummary } from './import/bulk.js';
 import { SUMMARY_INSERT_COLUMNS, summaryInsertPlaceholders, summaryFTSTriggersSQL } from './schema/index.js';
 
 /**
@@ -2203,8 +2204,7 @@ export class SessionStore {
   }
 
   /**
-   * Import session summary with duplicate checking
-   * Returns: { imported: boolean, id: number }
+   * Delegates to import/bulk.ts::importSessionSummary() — the canonical implementation.
    */
   importSessionSummary(summary: {
     memory_session_id: string;
@@ -2222,41 +2222,7 @@ export class SessionStore {
     created_at: string;
     created_at_epoch: number;
   }): { imported: boolean; id: number } {
-    // Check if summary already exists for this session
-    const existing = this.db.prepare(
-      'SELECT id FROM session_summaries WHERE memory_session_id = ?'
-    ).get(summary.memory_session_id) as { id: number } | undefined;
-
-    if (existing) {
-      return { imported: false, id: existing.id };
-    }
-
-    const stmt = this.db.prepare(`
-      INSERT INTO session_summaries (
-        memory_session_id, project, request, investigated, learned,
-        completed, next_steps, files_read, files_edited, notes,
-        prompt_number, discovery_tokens, created_at, created_at_epoch
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `);
-
-    const result = stmt.run(
-      summary.memory_session_id,
-      summary.project,
-      summary.request,
-      summary.investigated,
-      summary.learned,
-      summary.completed,
-      summary.next_steps,
-      summary.files_read,
-      summary.files_edited,
-      summary.notes,
-      summary.prompt_number,
-      summary.discovery_tokens || 0,
-      summary.created_at,
-      summary.created_at_epoch
-    );
-
-    return { imported: true, id: result.lastInsertRowid as number };
+    return modularImportSessionSummary(this.db, summary);
   }
 
   /**
