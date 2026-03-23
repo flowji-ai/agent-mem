@@ -35,6 +35,12 @@ This plan contains the highest-risk step (storage delegation) and should be exec
 - Mark `SessionStore.storeSummary()` and `SessionStore.storeObservation()` as delegators with comments pointing to the canonical implementations
 - **DO NOT fully consolidate if behaviour differs.** Compare implementations line-by-line first. Known difference: `SessionStore.storeObservations()` (plural) may be missing content-hash dedup that `transactions.ts` has. Document this as a pre-existing issue — do not fix it in this refactor.
 
+**Tests:** Write delegation equivalence tests in `tests/sqlite/storage-delegation.test.ts`:
+- Call `SessionStore.storeSummary()` and `summaries/store.ts::storeSummary()` with identical inputs, verify identical DB rows
+- Call `SessionStore.storeObservation()` and `observations/store.ts::storeObservation()` with identical inputs, verify identical DB rows
+- If behaviour differs (e.g. content-hash dedup), document the difference in the test file as a comment and test both paths independently
+- Update any existing tests that break due to delegation changes
+
 **Verify:** `bun test` (especially `tests/session_store.test.ts` and `tests/services/sqlite/`), run a real session
 **Commit:** `refactor: consolidate storage logic — SessionStore delegates to modular functions`
 
@@ -46,7 +52,8 @@ This plan contains the highest-risk step (storage delegation) and should be exec
 
 **DO NOT touch historical migration methods** — `migration004`, `migration006`, `removeSessionSummariesUniqueConstraint`, `addOnUpdateCascadeToForeignKeys`, etc. are immutable history. They must produce the exact DDL they always did.
 
-**Verify:** `bun test`, create a fresh `:memory:` database and verify schema matches expectations via `PRAGMA table_info(session_summaries)`
+**Tests:** Add schema init test to `tests/sqlite/schema/schema-init.test.ts` — create a fresh `:memory:` DB via both init paths (`runner.ts::initializeSchema` and `SessionStore::initializeSchema`), verify `PRAGMA table_info(session_summaries)` matches `SUMMARY_ALL_COLUMNS` for both. Also verify FTS5 table exists and triggers fire.
+**Verify:** `bun test`
 **Commit:** `refactor: replace DDL in initializeSchema with central schema helpers`
 
 ### Step 7: Update downstream consumers
@@ -56,6 +63,11 @@ This plan contains the highest-risk step (storage delegation) and should be exec
 - `src/services/worker-types.ts` — `Summary` interface has `session_id` (from JOIN, not `memory_session_id`). Use `Omit<SessionSummaryRow, 'memory_session_id'> & { session_id: string }` or keep standalone with a documented note explaining the divergence.
 - `src/services/worker/PaginationHelper.ts` — uses JOIN query with table-prefixed columns (`ss.request`). Replace column list with central constants, prefix with `ss.` for the JOIN context.
 - `src/services/sync/ChromaSync.ts` — has 19 column references, its own inline type for summary fields, and per-field Chroma metadata construction (`field_type: 'investigated'`, etc.). Update to use central constants and canonical type. Each content field should produce a separate Chroma vector document.
+
+**Tests:** Add consumer tests to `tests/sqlite/schema/consumer-integration.test.ts`:
+- Verify `normalizeSummaryForStorage()` output matches the canonical type fields (no silent field dropping)
+- Verify `PaginationHelper.getSummaries()` returns all content columns
+- Update any existing tests for ResponseProcessor, ChromaSync, or PaginationHelper that reference old field names
 
 **Verify:** `bun test`, worker starts, viewer loads at `localhost:37777`, run a real session and check both SQLite and ChromaDB contain the expected data
 **Commit:** `refactor: update downstream consumers to use central schema constants`

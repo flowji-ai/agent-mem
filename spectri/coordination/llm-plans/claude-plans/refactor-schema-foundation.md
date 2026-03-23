@@ -77,7 +77,8 @@ This gives you the full picture of what's duplicated and what the canonical defi
 - Update all import sites across the codebase
 - Add `'mistake'` to `ObservationRecord` type union in `src/types/database.ts`. Keep `'discovery'` for backward compatibility.
 
-**Verify:** `tsc --noEmit` (this is the most important check — type errors will cascade), `bun test`
+**Tests:** No new test files needed — existing tests validate the type changes via compilation. If any existing tests import removed types, update their imports to use the canonical source.
+**Verify:** `tsc --noEmit` (this is the most important check — type errors will cascade), `bun test` (fix any test that fails due to import changes)
 **Commit:** `refactor: consolidate summary type definitions to single source of truth`
 
 ### Step 3: Replace hardcoded SELECT column lists
@@ -87,6 +88,7 @@ Replace inline column strings with `summarySelectCols(...)` in:
 - `src/services/sqlite/summaries/recent.ts` — `getRecentSummaries()`, `getRecentSummariesWithSessionInfo()`, `getAllRecentSummaries()` (3 SELECTs, each with different column subsets)
 - `src/services/context/ObservationCompiler.ts` — `querySummaries()`, `querySummariesMulti()` (2 SELECTs)
 
+**Tests:** Add regression tests to `tests/sqlite/schema/summary-columns.test.ts` — for each replaced SELECT, verify the generated SQL string matches the original hardcoded string exactly (snapshot comparison). This catches column order or spacing differences.
 **Verify:** `bun test`, worker starts and serves viewer at `localhost:37777`
 **Commit:** `refactor: replace hardcoded SELECT column lists with central constants`
 
@@ -99,6 +101,7 @@ Replace inline INSERT SQL with `SUMMARY_INSERT_COLUMNS` and `summaryInsertPlaceh
 
 **Important:** Verify parameter order matches column order after replacement. A mismatch silently corrupts data.
 
+**Tests:** Add INSERT roundtrip test to `tests/sqlite/schema/summary-columns.test.ts` — INSERT a row using `SUMMARY_INSERT_COLUMNS` and `summaryInsertPlaceholders()`, read it back with `SELECT *`, verify every field has the expected value in the expected column. This catches parameter order mismatches.
 **Verify:** `bun test`, run a real session to verify snapshots still store correctly
 **Commit:** `refactor: replace hardcoded INSERT column lists with central constants`
 
