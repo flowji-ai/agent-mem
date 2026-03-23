@@ -18,7 +18,7 @@ Replace claude-mem's generic snapshot fields with structured, decision-oriented 
 
 *Approved during planning checkpoint on 2026-03-23. Validated by 5-agent consensus (3 Gemini Pro + 2 Claude).*
 
-1. **Schema & Types**: DB migration (new columns + scaffolding), FTS5 triggers, TypeScript interfaces, parser update, store function update
+1. **Schema & Types**: DB migration (new columns + scaffolding + `source TEXT DEFAULT 'auto'`), FTS5 triggers, TypeScript interfaces, parser update, store function update
 2. **Mode, Prompt & Provider**: Create `agent-workflow.json` (remove discovery, add mistake, update concepts), rewrite extraction prompt with new XML template, switch to `gemini-2.5-flash`, update settings
 3. **Manual Capture**: Build `capture_to_mem` MCP tool + HTTP endpoint, flag-and-skip dedup, importance auto-set, source field, empty content rejection
 4. **Context Injection & Viewer**: Update SummaryRenderer for new fields, update SummaryCard.tsx to display new fields, update ObservationCompiler queries
@@ -105,8 +105,8 @@ spectri/specs/01-drafting/001-phase-1-snapshot-fields/
 
 ```text
 # Phase 1: Schema & Types
-src/services/sqlite/migrations.ts          # Add migration008 with new columns
-src/services/sqlite/migrations/            # Individual migration files if split
+src/services/sqlite/migrations.ts          # Add migration with new columns + source field
+src/services/sqlite/migrations/runner.ts   # MigrationRunner pattern (verify next version number)
 src/services/sqlite/summaries/types.ts     # Update SummaryInput, SessionSummary, etc.
 src/services/sqlite/summaries/store.ts     # Update storeSummary INSERT columns
 src/sdk/parser.ts                          # Update ParsedSummary interface and parseSummaries()
