@@ -131,6 +131,11 @@ export interface Observation {
   created_at_epoch: number;
 }
 
+/**
+ * Summary for viewer API responses.
+ * Diverges from SessionSummaryRow: uses `session_id` (content_session_id from JOIN)
+ * instead of `memory_session_id`, and omits files_read/files_edited/prompt_number/discovery_tokens.
+ */
 export interface Summary {
   id: number;
   session_id: string; // content_session_id (from JOIN)

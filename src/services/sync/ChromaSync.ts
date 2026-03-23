@@ -16,6 +16,8 @@ import { ChromaMcpManager } from './ChromaMcpManager.js';
 import { ParsedObservation, ParsedSummary } from '../../sdk/parser.js';
 import { SessionStore } from '../sqlite/SessionStore.js';
 import { logger } from '../../utils/logger.js';
+import type { SessionSummaryRow } from '../sqlite/types.js';
+import { SUMMARY_FTS_COLUMNS } from '../sqlite/schema/index.js';
 
 interface ChromaDocument {
   id: string;
@@ -42,21 +44,8 @@ interface StoredObservation {
   created_at_epoch: number;
 }
 
-interface StoredSummary {
-  id: number;
-  memory_session_id: string;
-  project: string;
-  request: string | null;
-  investigated: string | null;
-  learned: string | null;
-  completed: string | null;
-  next_steps: string | null;
-  notes: string | null;
-  prompt_number: number;
-  discovery_tokens: number; // ROI metrics
-  created_at: string;
-  created_at_epoch: number;
-}
+// StoredSummary is the canonical SessionSummaryRow from sqlite/types.ts
+type StoredSummary = SessionSummaryRow;
 
 interface StoredUserPrompt {
   id: number;
@@ -198,53 +187,16 @@ export class ChromaSync {
       prompt_number: summary.prompt_number || 0
     };
 
-    // Each field becomes a separate document
-    if (summary.request) {
-      documents.push({
-        id: `summary_${summary.id}_request`,
-        document: summary.request,
-        metadata: { ...baseMetadata, field_type: 'request' }
-      });
-    }
-
-    if (summary.investigated) {
-      documents.push({
-        id: `summary_${summary.id}_investigated`,
-        document: summary.investigated,
-        metadata: { ...baseMetadata, field_type: 'investigated' }
-      });
-    }
-
-    if (summary.learned) {
-      documents.push({
-        id: `summary_${summary.id}_learned`,
-        document: summary.learned,
-        metadata: { ...baseMetadata, field_type: 'learned' }
-      });
-    }
-
-    if (summary.completed) {
-      documents.push({
-        id: `summary_${summary.id}_completed`,
-        document: summary.completed,
-        metadata: { ...baseMetadata, field_type: 'completed' }
-      });
-    }
-
-    if (summary.next_steps) {
-      documents.push({
-        id: `summary_${summary.id}_next_steps`,
-        document: summary.next_steps,
-        metadata: { ...baseMetadata, field_type: 'next_steps' }
-      });
-    }
-
-    if (summary.notes) {
-      documents.push({
-        id: `summary_${summary.id}_notes`,
-        document: summary.notes,
-        metadata: { ...baseMetadata, field_type: 'notes' }
-      });
+    // Each FTS-indexed field becomes a separate Chroma document
+    for (const field of SUMMARY_FTS_COLUMNS) {
+      const value = summary[field];
+      if (value) {
+        documents.push({
+          id: `summary_${summary.id}_${field}`,
+          document: value,
+          metadata: { ...baseMetadata, field_type: field }
+        });
+      }
     }
 
     return documents;
