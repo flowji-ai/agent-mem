@@ -29,47 +29,64 @@ This plan contains the highest-risk step (storage delegation) and should be exec
 
 ### Step 5: Consolidate storage delegation
 
+**Tests FIRST (Red phase):** Write delegation equivalence tests in `tests/sqlite/storage-delegation.test.ts`:
+- Call `summaries/store.ts::storeSummary()` with known test inputs, verify DB row is correct
+- Call `observations/store.ts::storeObservation()` with known test inputs, verify DB row is correct
+- Test that calling both paths with identical inputs produces identical rows (this will initially pass since both exist, but validates the contract before delegation)
+- If behaviour differs (e.g. content-hash dedup), document the difference in the test file as a comment and test both paths independently
+
+**Verify tests PASS** (these test existing behaviour before changing anything).
+
+**Implementation (Green phase):**
+- Compare `SessionStore.storeSummary()` and `summaries/store.ts::storeSummary()` line-by-line
 - Make `SessionStore.storeSummary()` delegate to `summaries/store.ts::storeSummary()` — pass `this.db` as parameter
 - Make `SessionStore.storeObservation()` delegate to `observations/store.ts::storeObservation()`
 - Keep `transactions.ts` transaction bodies intact — they already use central constants from Plan A Step 4. Do NOT extract the transaction logic itself.
 - Mark `SessionStore.storeSummary()` and `SessionStore.storeObservation()` as delegators with comments pointing to the canonical implementations
-- **DO NOT fully consolidate if behaviour differs.** Compare implementations line-by-line first. Known difference: `SessionStore.storeObservations()` (plural) may be missing content-hash dedup that `transactions.ts` has. Document this as a pre-existing issue — do not fix it in this refactor.
+- **DO NOT fully consolidate if behaviour differs.** Known difference: `SessionStore.storeObservations()` (plural) may be missing content-hash dedup that `transactions.ts` has. Document this as a pre-existing issue — do not fix it in this refactor.
 
-**Tests:** Write delegation equivalence tests in `tests/sqlite/storage-delegation.test.ts`:
-- Call `SessionStore.storeSummary()` and `summaries/store.ts::storeSummary()` with identical inputs, verify identical DB rows
-- Call `SessionStore.storeObservation()` and `observations/store.ts::storeObservation()` with identical inputs, verify identical DB rows
-- If behaviour differs (e.g. content-hash dedup), document the difference in the test file as a comment and test both paths independently
-- Update any existing tests that break due to delegation changes
-
-**Verify:** `bun test` (especially `tests/session_store.test.ts` and `tests/services/sqlite/`), run a real session
+**Verify tests still PASS:** `bun test` (especially `tests/session_store.test.ts`, `tests/services/sqlite/`, and the new `storage-delegation.test.ts`), run a real session
 **Commit:** `refactor: consolidate storage logic — SessionStore delegates to modular functions`
 
 ### Step 6: Replace DDL in initializeSchema and FTS
 
+**Tests FIRST (Red phase):** Write `tests/sqlite/schema/schema-init.test.ts`:
+- Create a fresh `:memory:` DB via `runner.ts::initializeSchema`, verify `PRAGMA table_info(session_summaries)` matches `SUMMARY_ALL_COLUMNS`
+- Create a fresh `:memory:` DB via `SessionStore::initializeSchema`, verify same schema
+- Verify FTS5 virtual table `session_summaries_fts` exists in both
+- Verify FTS5 triggers fire on INSERT/UPDATE/DELETE
+- These tests should PASS against the current code (testing existing behaviour before refactoring)
+
+**Verify tests PASS** (baseline — existing init produces correct schema).
+
+**Implementation (Green phase):**
 - `src/services/sqlite/migrations/runner.ts` `initializeSchema()` → use `summaryCreateTableSQL()` from central schema module
 - `src/services/sqlite/SessionStore.ts` `initializeSchema()` → same
 - `src/services/sqlite/SessionSearch.ts` `ensureFTSTables()` → use `summaryFTSCreateSQL()` from central schema module
 
 **DO NOT touch historical migration methods** — `migration004`, `migration006`, `removeSessionSummariesUniqueConstraint`, `addOnUpdateCascadeToForeignKeys`, etc. are immutable history. They must produce the exact DDL they always did.
 
-**Tests:** Add schema init test to `tests/sqlite/schema/schema-init.test.ts` — create a fresh `:memory:` DB via both init paths (`runner.ts::initializeSchema` and `SessionStore::initializeSchema`), verify `PRAGMA table_info(session_summaries)` matches `SUMMARY_ALL_COLUMNS` for both. Also verify FTS5 table exists and triggers fire.
-**Verify:** `bun test`
+**Verify tests still PASS:** `bun test` — the schema-init tests prove the refactored init produces identical schemas
 **Commit:** `refactor: replace DDL in initializeSchema with central schema helpers`
 
 ### Step 7: Update downstream consumers
 
+**Tests FIRST (Red phase):** Write `tests/sqlite/schema/consumer-integration.test.ts`:
+- Test that `normalizeSummaryForStorage()` output includes all `SUMMARY_CONTENT_COLUMNS` fields (no silent field dropping)
+- Test that `PaginationHelper.getSummaries()` query returns all content columns
+- These tests should PASS against the current code (testing existing behaviour before refactoring)
+
+**Verify tests PASS** (baseline).
+
+**Implementation (Green phase):**
 - `src/services/worker/agents/ResponseProcessor.ts` — update `normalizeSummaryForStorage()` to use the canonical type from `summaries/types.ts` instead of inline field mapping
 - `src/services/worker/agents/types.ts` — update `SummarySSEPayload` to derive from the canonical type where possible
 - `src/services/worker-types.ts` — `Summary` interface has `session_id` (from JOIN, not `memory_session_id`). Use `Omit<SessionSummaryRow, 'memory_session_id'> & { session_id: string }` or keep standalone with a documented note explaining the divergence.
 - `src/services/worker/PaginationHelper.ts` — uses JOIN query with table-prefixed columns (`ss.request`). Replace column list with central constants, prefix with `ss.` for the JOIN context.
-- `src/services/sync/ChromaSync.ts` — has 19 column references, its own inline type for summary fields, and per-field Chroma metadata construction (`field_type: 'investigated'`, etc.). Update to use central constants and canonical type. Each content field should produce a separate Chroma vector document.
+- `src/services/sync/ChromaSync.ts` — has 19 column references, its own inline type for summary fields, and per-field Chroma metadata construction (`field_type: 'investigated'`, etc.). Update to use central constants and canonical type.
+- Update any existing tests for ResponseProcessor, ChromaSync, or PaginationHelper that reference old type names or field names
 
-**Tests:** Add consumer tests to `tests/sqlite/schema/consumer-integration.test.ts`:
-- Verify `normalizeSummaryForStorage()` output matches the canonical type fields (no silent field dropping)
-- Verify `PaginationHelper.getSummaries()` returns all content columns
-- Update any existing tests for ResponseProcessor, ChromaSync, or PaginationHelper that reference old field names
-
-**Verify:** `bun test`, worker starts, viewer loads at `localhost:37777`, run a real session and check both SQLite and ChromaDB contain the expected data
+**Verify tests still PASS:** `bun test`, worker starts, viewer loads at `localhost:37777`, run a real session and check both SQLite and ChromaDB contain the expected data
 **Commit:** `refactor: update downstream consumers to use central schema constants`
 
 ### Step 8: Final cleanup
