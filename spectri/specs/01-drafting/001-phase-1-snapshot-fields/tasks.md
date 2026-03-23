@@ -43,22 +43,23 @@ description: "Task list for Phase 1 — Snapshot Fields, Manual Capture & Noise 
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete.
 
-### Implementation
+### Tests (MUST write first — verify they FAIL)
 
-- [ ] T007 Determine next migration version number by reading `src/services/sqlite/migrations/runner.ts` and finding the highest existing version
-- [ ] T008 Add migration to `src/services/sqlite/migrations/runner.ts` — ALTER TABLE `session_summaries` adding columns: `title TEXT`, `decision_log TEXT`, `decision_trade_offs TEXT`, `constraints_log TEXT`, `mistakes TEXT`, `gotchas TEXT`, `commit_ref TEXT`, `open_questions TEXT`, `unresolved TEXT`, `importance INTEGER DEFAULT 5`, `hidden_fields TEXT`, `source TEXT DEFAULT 'auto'`
-- [ ] T009 Update FTS5 virtual table and triggers in migration — DROP existing `session_summaries_fts` and its three triggers (`_ai`, `_ad`, `_au`), CREATE new FTS5 table indexing the new columns, CREATE new sync triggers. Follow pattern from existing migration006.
-- [ ] T010 [P] Update `src/services/sqlite/summaries/types.ts` — add new fields to `SummaryInput`, `SessionSummary`, `FullSummary`, `RecentSummary`, `SummaryWithSessionInfo` interfaces
-- [ ] T011 [P] Update `src/sdk/parser.ts` — update `ParsedSummary` interface and `parseSummaries()` function to extract new XML fields (`decision_log`, `decision_trade_offs`, `constraints_log`, `mistakes`, `gotchas`, `commit_ref`, `open_questions`, `unresolved`, `title`)
-- [ ] T012 [P] Update `src/services/sqlite/summaries/store.ts` — update `storeSummary()` INSERT statement to include all new columns
-- [ ] T013 [P] Update `src/types/database.ts` — add new fields to `SessionSummaryRecord`, add `'mistake'` to `ObservationRecord` type union, remove `'discovery'` from union
-- [ ] T014 [P] Update `src/services/sqlite/summaries/get.ts` — update SELECT column lists to include new fields
-- [ ] T015 [P] Update `src/services/sqlite/summaries/recent.ts` — update SELECT column lists to include new fields
+- [ ] T007 Write migration test in `tests/sqlite/migration-schema.test.ts` — verify migration runs cleanly, all new columns exist, FTS5 triggers fire on INSERT/UPDATE/DELETE, old records survive with null new fields
+- [ ] T008 Write parser test in `tests/snapshot-parser.test.ts` — verify parser correctly extracts new XML fields, handles missing fields (returns undefined not filler), handles old-format XML gracefully
 
-### Tests
+### Implementation (makes tests pass)
 
-- [ ] T016 Write migration test in `tests/sqlite/migration-schema.test.ts` — verify migration runs cleanly, all new columns exist, FTS5 triggers fire on INSERT/UPDATE/DELETE, old records survive with null new fields
-- [ ] T017 Write parser test in `tests/snapshot-parser.test.ts` — verify `parseSummaries()` correctly extracts new XML fields, handles missing fields (returns undefined not filler), handles old-format XML gracefully
+- [ ] T009 Determine next migration version number by reading `src/services/sqlite/migrations/runner.ts` and finding the highest existing version
+- [ ] T010 Add migration as a new private method in `src/services/sqlite/migrations/runner.ts` following the existing pattern (version check + ALTER TABLE). Columns: `title TEXT`, `decision_log TEXT`, `decision_trade_offs TEXT`, `constraints_log TEXT`, `mistakes TEXT`, `gotchas TEXT`, `commit_ref TEXT`, `open_questions TEXT`, `unresolved TEXT`, `importance INTEGER DEFAULT 5`, `hidden_fields TEXT`, `source TEXT DEFAULT 'auto'`. T010 and T011 MUST be in the same migration method (atomic).
+- [ ] T011 In the same migration method as T010, update FTS5 virtual table and triggers — DROP existing `session_summaries_fts` and its three triggers (`_ai`, `_ad`, `_au`), CREATE new FTS5 table indexing the new columns, CREATE new sync triggers. Also check `src/services/sqlite/SessionSearch.ts` for a duplicate `ensureFTSTables()` method and update if present.
+- [ ] T012 [P] Update `src/services/sqlite/summaries/types.ts` — add new fields to `SummaryInput`, `SessionSummary`, `FullSummary`, `RecentSummary`, `SummaryWithSessionInfo` interfaces
+- [ ] T013 [P] Update `src/sdk/parser.ts` — update `ParsedSummary` interface and the parser function to extract new XML fields (`decision_log`, `decision_trade_offs`, `constraints_log`, `mistakes`, `gotchas`, `commit_ref`, `open_questions`, `unresolved`, `title`). Verify the actual function name in the file (may be `parseSummary` singular).
+- [ ] T014 [P] Update `src/services/sqlite/summaries/store.ts` — update `storeSummary()` INSERT statement to include all new columns
+- [ ] T015 [P] Update `src/types/database.ts` — add new fields to `SessionSummaryRecord`, add `'mistake'` to `ObservationRecord` type union. Keep `'discovery'` in the union for backward compatibility with existing DB records.
+- [ ] T016 [P] Update `src/services/sqlite/summaries/get.ts` — update SELECT column lists to include new fields
+- [ ] T017 [P] Update `src/services/sqlite/summaries/recent.ts` — update SELECT column lists to include new fields
+- [ ] T017a Grep codebase for `investigated|learned|completed|next_steps` to find any other files with hardcoded column lists (e.g. `ResponseProcessor.ts`, `worker-types.ts`, `PaginationHelper.ts`, `ChromaSync.ts`, `SessionStore.ts`) and update them all to include new fields
 
 - [ ] T018 [Checkpoint] Create implementation summary documenting schema & types work
 - [ ] T019 [Checkpoint] Commit work + summary to Git
@@ -77,7 +78,7 @@ description: "Task list for Phase 1 — Snapshot Fields, Manual Capture & Noise 
 
 ### Tests (MUST write first — verify they FAIL)
 
-- [ ] T020 [P] [US1] Write extraction test in `tests/snapshot-extraction.test.ts` — given a mock assistant message containing a decision with trade-offs, verify the extraction produces `decision_log` with final decision only and `decision_trade_offs` with rejected alternative. Verify reversed decisions produce only the final decision with reversal noted.
+- [ ] T020 [P] [US1] Write extraction test in `tests/snapshot-extraction.test.ts` — test all structured fields: (a) decision with trade-offs → `decision_log` + `decision_trade_offs`, (b) reversed decision → only final decision with reversal noted, (c) standing rule → `constraints_log` not duplicated in `decision_log`, (d) failed approach → `mistakes` with specificity, (e) open question → `open_questions` not `decision_log`
 - [ ] T021 [P] [US1] Write empty-field test in `tests/snapshot-extraction.test.ts` — given a mock assistant message with only code implementation (no decisions/mistakes/constraints), verify the extraction produces only `title` and `commit_ref`, all other fields absent (not "None" or "N/A").
 - [ ] T022 [P] [US3] Write noise-reduction test in `tests/observation-noise.test.ts` — given a tool call for file read or directory listing, verify no observation is generated. Given a tool call that reveals a genuine gotcha, verify an observation IS generated with exact file path and concept tag.
 - [ ] T023 [P] [US3] Write mistake-observation test in `tests/observation-noise.test.ts` — given session content where an approach failed and was corrected, verify a `mistake` type observation is generated with specific detail.
