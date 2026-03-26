@@ -60,6 +60,19 @@ Every commit must include everything needed to close the loop. See Step 14 for t
 | "I'll update the spec in the next commit" | Spec and code diverge the moment they're in different commits. Bundle them. |
 | "The summary can wait" | The summary is part of the bundle. One commit. |
 
+### Workflow-skipping rationalisations
+
+If you catch yourself thinking any of these, you are about to skip the workflow. Stop.
+
+| Thought | Counter |
+|---------|---------|
+| "I know how to do this" | Knowing how is not the same as following the workflow. The workflow catches what you miss. |
+| "It's just a quick fix" | Quick fixes are the most common source of skipped workflows. They accumulate into untracked technical debt. |
+| "This doesn't need a test" | If it changes behaviour, it needs a test. If it doesn't change behaviour, say so explicitly at step 6. |
+| "I'll come back to the skill steps later" | Later never comes. Execute the workflow now while context is fresh. |
+| "The user just wants the change, not the process" | The user wants a reliable system. The process is what makes the system reliable. |
+| "This is too small for the full workflow" | The workflow has a fast path for small changes. Use it instead of inventing your own. |
+
 ## Steps
 
 <IMPORTANT>

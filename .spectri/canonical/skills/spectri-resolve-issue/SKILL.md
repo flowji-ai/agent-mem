@@ -70,6 +70,19 @@ The commit that resolves the issue MUST include everything needed to close the l
 
 Intermediate commits during the work carry their own spec obligations but don't include the resolved issue — that lands at the end.
 
+### Workflow-skipping rationalisations
+
+If you catch yourself thinking any of these, you are about to skip the workflow. Stop.
+
+| Thought | Counter |
+|---------|---------|
+| "I know how to do this" | Knowing how is not the same as following the workflow. The workflow catches what you miss. |
+| "It's just a quick fix" | Quick fixes are the most common source of skipped workflows and incomplete bundles. |
+| "I'll resolve the issue in a separate commit" | The resolved issue MUST be in the same final commit as the fix. That is the bundle. |
+| "I don't need the find-related-specs script" | The script finds specs you don't know about. Skipping it means missing governing specs. |
+| "I'll do the artifact sweep later" | Deferred sweeps get missed. Do it now while context is fresh. |
+| "The user just wants this fixed" | The user wants a reliable, traceable fix. The workflow provides that. |
+
 ## Steps
 
 <IMPORTANT>

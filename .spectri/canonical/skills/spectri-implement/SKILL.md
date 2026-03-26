@@ -52,6 +52,18 @@ flowchart LR
 - ❌ Skip the artifact resolution sweep because "the command already committed"
 - ❌ Push before verifying the bundle is complete
 
+### Workflow-skipping rationalisations
+
+If you catch yourself thinking any of these, you are about to skip the workflow. Stop.
+
+| Thought | Counter |
+|---------|---------|
+| "I know how to do this" | Knowing how is not the same as following the workflow. The workflow catches what you miss. |
+| "/spec.implement handles everything" | It handles the core commit but NOT build/sync, ADR, or artifact resolution sweep. Those are your responsibility. |
+| "I'll do the artifact sweep later" | Deferred sweeps get missed. Do it now while context is fresh. |
+| "This task is too simple for the full workflow" | Simple tasks skip steps naturally (step 3 is optional, step 6 only fires if needed). The workflow already handles simplicity. |
+| "The user just wants the code done" | The user wants a working system with traceability. The workflow provides that. |
+
 ## Steps
 
 <IMPORTANT>

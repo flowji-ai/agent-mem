@@ -49,6 +49,10 @@ Plans MUST NOT contain code blocks. Two reasons:
 Describe expected outcomes per step instead.
 </CRITICAL>
 
+### Zero-Context Persona
+
+Write plans as if the executor has zero project knowledge. Every reference must be a file path, every decision must include rationale, every step must be independently executable. Plans that assume context produce agents that fail after compaction or session handoff.
+
 ## Plans as a Change Path
 
 Plans coordinate work at any scale — they are not limited to small changes or spec-free work.
