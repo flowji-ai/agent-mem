@@ -1,6 +1,6 @@
 ---
-Date Created: [ISO_TIMESTAMP]
-Date Updated: [ISO_TIMESTAMP]
+Date Created: {{ISO_TIMESTAMP}}
+Date Updated: {{ISO_TIMESTAMP}}
 Agent: [AGENT_NAME]
 User: [USERNAME]
 Session ID: [SESSION_ID]

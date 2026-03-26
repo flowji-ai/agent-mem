@@ -138,9 +138,9 @@ cp "$TEMPLATE_PATH" "$ADR_PATH" 2>/dev/null || error_exit 2 "Could not create AD
 CURRENT_DATE=$(get_date_timestamp)
 SAFE_TITLE=$(escape_sed "$TITLE")
 
-sed_inplace "s|{NNNN}|${ADR_ID}|g" "$ADR_PATH"
+sed_inplace "s|{{NNNN}}|${ADR_ID}|g" "$ADR_PATH"
 sed_inplace "s|{Decision Cluster Title}|${SAFE_TITLE}|g" "$ADR_PATH"
-sed_inplace "s|{YYYY-MM-DD}|${CURRENT_DATE}|g" "$ADR_PATH"
+sed_inplace "s|{{YYYY-MM-DD}}|${CURRENT_DATE}|g" "$ADR_PATH"
 sed_inplace "s|{Cluster Title}|${SAFE_TITLE}|g" "$ADR_PATH"
 
 # Output result

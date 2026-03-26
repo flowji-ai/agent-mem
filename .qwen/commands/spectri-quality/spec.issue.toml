@@ -589,3 +589,4 @@ When users are unsure about priority, guide them with these questions:
 
 <!-- INJECT: post-finalization -->
 '''
+model = "sonnet"

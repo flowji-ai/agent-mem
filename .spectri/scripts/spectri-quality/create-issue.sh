@@ -28,10 +28,8 @@ ISSUES_DIR="$REPO_ROOT/spectri/issues"
 SCREENSHOTS_DIR="$REPO_ROOT/screenshots"
 SCREENSHOTS_PROCESSED_DIR="$REPO_ROOT/screenshots/processed"
 
-# Valid priority values
-VALID_PRIORITIES="critical high medium low"
-
 # Source shared libraries
+source "$SCRIPT_DIR/../../lib/validation.sh"
 source "$REPO_ROOT/.spectri/lib/logging.sh"
 source "$REPO_ROOT/.spectri/lib/timestamp-utils.sh"
 
@@ -56,25 +54,6 @@ print_usage() {
     echo "Examples:"
     echo "  $0 --slug \"fix-login-bug\" --priority high --summary \"Login fails with valid credentials\""
     echo "  $0 --slug \"ui-broken\" --priority critical --summary \"UI not rendering\" --screenshot screenshots/ui-bug.png"
-}
-
-validate_priority() {
-    local priority="$1"
-    for valid in $VALID_PRIORITIES; do
-        if [[ "$priority" == "$valid" ]]; then
-            return 0
-        fi
-    done
-    return 1
-}
-
-validate_slug() {
-    local slug="$1"
-    # Check if slug matches kebab-case pattern (lowercase letters, numbers, hyphens)
-    if [[ ! "$slug" =~ ^[a-z0-9]+(-[a-z0-9]+)*$ ]]; then
-        return 1
-    fi
-    return 0
 }
 
 generate_filename() {

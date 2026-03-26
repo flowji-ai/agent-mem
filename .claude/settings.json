@@ -24,7 +24,7 @@
       "Bash(git add:*)",
       "Bash(git commit:*)",
       "Bash(echo \"EXIT:$?\")",
-      "Bash(bash /Users/ostiimac/Forge/primary-vault/04-REPOSITORIES/04-REPOS-flowji-ai/agent-mem/.spectri/scripts/spectri-quality/create-issue.sh --slug \"specify-silent-no-draft-message\" --priority \"high\" --summary \"spec.specify reports ''No draft session found'' on first run, confusing users and derailing workflow — should only mention drafts when a draft file actually exists\" --agent \"Claude Opus\" --target-repo spectri)",
+      "Bash(bash /Users/ostiimac/Forge/primary-vault/04-REPOSITORIES/04-REPOS-flowji-ai/agent-mem/.spectri/scripts/spectri-quality/create-issue.sh --slug \"specify-silent-no-draft-message\" --priority \"high\" --summary \"spec.specify reports ''No draft session found'' on first run, confusing users and derailing workflow \u2014 should only mention drafts when a draft file actually exists\" --agent \"Claude Opus\" --target-repo spectri)",
       "mcp__pal__consensus",
       "Bash(bash /Users/ostiimac/Forge/primary-vault/04-REPOSITORIES/04-REPOS-flowji-ai/agent-mem/.spectri/scripts/shared/get-timestamp.sh)",
       "Bash(bash /Users/ostiimac/Forge/primary-vault/04-REPOSITORIES/04-REPOS-flowji-ai/agent-mem/.spectri/scripts/spectri-core/create-plan-scaffold.sh --json --spec \"001-phase-1-snapshot-fields\")",
@@ -38,6 +38,106 @@
       "Read(./package-lock.json)",
       "Read(./node_modules/**)",
       "Read(./.DS_Store)"
+    ]
+  },
+  "hooks": {
+    "PostCompact": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .spectri/scripts/hooks/inject-session-start.sh",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .spectri/scripts/hooks/spec-folder-watchdog.sh",
+            "timeout": 10
+          }
+        ],
+        "matcher": "Write"
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .spectri/scripts/hooks/spec-folder-watchdog.sh",
+            "timeout": 10
+          }
+        ],
+        "matcher": "Edit"
+      }
+    ],
+    "PreToolUse": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .spectri/scripts/hooks/artifact-write-guard.sh",
+            "timeout": 10
+          },
+          {
+            "type": "command",
+            "command": "bash .spectri/scripts/hooks/spec-folder-edit-guard.sh",
+            "timeout": 10
+          }
+        ],
+        "matcher": "Write"
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .spectri/scripts/hooks/artifact-write-guard.sh",
+            "timeout": 10
+          },
+          {
+            "type": "command",
+            "command": "bash .spectri/scripts/hooks/spec-folder-edit-guard.sh",
+            "timeout": 10
+          }
+        ],
+        "matcher": "Edit"
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .spectri/scripts/hooks/inject-session-start.sh",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "SubagentStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .spectri/scripts/hooks/inject-session-start.sh",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .spectri/scripts/hooks/inject-user-prompt.sh",
+            "timeout": 10
+          }
+        ]
+      }
     ]
   }
 }

@@ -326,7 +326,7 @@ if [ -f "$SPEC_FILE" ] && [ -s "$SPEC_FILE" ]; then
     SAFE_FEATURE_NAME=$(escape_sed "$RESOLVED_FEATURE_NAME")
     SAFE_BRANCH_NAME=$(escape_sed "$BRANCH_NAME")
 
-    sed_inplace "s|\[ISO_TIMESTAMP\]|${TIMESTAMP}|g" "$SPEC_FILE"
+    sed_inplace "s|{{ISO_TIMESTAMP}}|${TIMESTAMP}|g" "$SPEC_FILE"
     sed_inplace "s|\[AGENT_SESSION_ID\]|${SAFE_SESSION_ID}|g" "$SPEC_FILE"
     sed_inplace "s|\[FEATURE NAME\]|${SAFE_FEATURE_NAME}|g" "$SPEC_FILE"
     sed_inplace "s|\[###-feature-name\]|${SAFE_BRANCH_NAME}|g" "$SPEC_FILE"

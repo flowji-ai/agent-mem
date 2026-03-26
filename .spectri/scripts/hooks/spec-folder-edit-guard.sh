@@ -50,7 +50,10 @@ fi
 REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || exit 0)
 
 # Find all dirty spec folders (modified or untracked files)
+# Strip the 2-char status code + space prefix before matching, so renames and
+# other multi-path lines don't match the status prefix as part of the path.
 DIRTY_FOLDERS=$(cd "$REPO_ROOT" && git status --porcelain 2>/dev/null \
+  | sed 's/^...//' \
   | grep -oE 'spectri/specs/0[0-5]-[^/]+/[^/]+/' \
   | sort -u 2>/dev/null || true)
 

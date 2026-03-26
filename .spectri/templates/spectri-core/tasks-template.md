@@ -1,6 +1,6 @@
 ---
-Date Created: [ISO_TIMESTAMP]
-Date Updated: [ISO_TIMESTAMP]
+Date Created: {{ISO_TIMESTAMP}}
+Date Updated: {{ISO_TIMESTAMP}}
 created_by: [AGENT_SESSION_ID]
 updated_by: [AGENT_SESSION_ID]
 description: "Task list template for feature implementation"

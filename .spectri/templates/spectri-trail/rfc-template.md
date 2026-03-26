@@ -1,6 +1,6 @@
 ---
-Date Created: [ISO_TIMESTAMP]
-Date Updated: [ISO_TIMESTAMP]
+Date Created: {{ISO_TIMESTAMP}}
+Date Updated: {{ISO_TIMESTAMP}}
 Status: Under Discussion
 Type: [System Architecture | Process Change | Tooling Decision]
 Priority: [High | Medium | Low]

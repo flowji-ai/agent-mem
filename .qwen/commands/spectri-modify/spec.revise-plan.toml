@@ -162,3 +162,4 @@ Before completing this command, verify:
 
 - Governing Spec: `spectri/specs/04-deployed/015-revise-plan-module/spec.md`
 '''
+model = "sonnet"

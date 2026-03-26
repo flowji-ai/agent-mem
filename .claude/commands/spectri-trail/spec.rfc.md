@@ -1,6 +1,7 @@
 ---
 managed_by: spectri
 description: "Create or update Request for Comments (RFC) to document pre-decision architectural proposals"
+model: sonnet
 family: spectri-trail
 origin:
   source: spectri
@@ -8,7 +9,7 @@ injections_applied:
   - user-input
   - finalization-verification
 build_info:
-  built_at: 2026-03-15T10:46:05Z
+  built_at: 2026-03-26T01:26:02Z
   manifest_version: 1.1.0
 ---
 <!-- INJECT: post-frontmatter -->

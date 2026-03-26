@@ -1,6 +1,7 @@
 ---
 managed_by: spectri
 description: "Identify underspecified areas in the current feature spec by asking up to 5 highly targeted clarification questions and encoding answers back into the spec."
+model: opus
 family: spectri-quality
 origin:
   source: github-spec-kit
@@ -12,7 +13,7 @@ injections_applied:
   - summary-creation
   - finalization-verification
 build_info:
-  built_at: 2026-03-15T10:46:04Z
+  built_at: 2026-03-26T01:26:00Z
   manifest_version: 1.1.0
 ---
 # Clarify Specification

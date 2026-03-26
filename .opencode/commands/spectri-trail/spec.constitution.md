@@ -1,6 +1,7 @@
 ---
 managed_by: spectri
 description: "Create or update the project constitution from interactive or provided principle inputs, ensuring all dependent templates stay in sync."
+model: opus
 family: spectri-trail
 origin:
   source: github-spec-kit
@@ -12,7 +13,7 @@ injections_applied:
   - summary-creation
   - finalization-verification
 build_info:
-  built_at: 2026-03-15T10:46:05Z
+  built_at: 2026-03-26T01:26:01Z
   manifest_version: 1.1.0
 ---
 # Create or Update Project Constitution

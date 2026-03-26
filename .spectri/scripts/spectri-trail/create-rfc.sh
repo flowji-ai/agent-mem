@@ -130,8 +130,8 @@ CURRENT_DATETIME=$(get_iso_timestamp)
 CURRENT_DATE=$(get_date_timestamp)
 
 # Update frontmatter
-sed_inplace "s|Date Created: \[ISO_TIMESTAMP\]|Date Created: $CURRENT_DATETIME|" "$RFC_PATH"
-sed_inplace "s|Date Updated: \[ISO_TIMESTAMP\]|Date Updated: $CURRENT_DATETIME|" "$RFC_PATH"
+sed_inplace "s|Date Created: {{ISO_TIMESTAMP}}|Date Created: $CURRENT_DATETIME|" "$RFC_PATH"
+sed_inplace "s|Date Updated: {{ISO_TIMESTAMP}}|Date Updated: $CURRENT_DATETIME|" "$RFC_PATH"
 sed_inplace "s/Type: \[System Architecture | Process Change | Tooling Decision\]/Type: $TYPE/" "$RFC_PATH"
 
 # Update title

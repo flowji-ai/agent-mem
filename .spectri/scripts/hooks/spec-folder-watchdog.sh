@@ -19,8 +19,10 @@ cat > /dev/null
 REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || exit 0)
 
 # Find dirty spec folders by checking git status for modified/untracked files
-# in spectri/specs/ directories
+# in spectri/specs/ directories. Strip the 2-char status code + space prefix
+# before matching to correctly handle renames and other multi-path lines.
 DIRTY_FOLDERS=$(cd "$REPO_ROOT" && git status --porcelain 2>/dev/null \
+  | sed 's/^...//' \
   | grep -oE 'spectri/specs/0[0-5]-[^/]+/[^/]+/' \
   | sort -u 2>/dev/null || true)
 

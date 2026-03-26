@@ -1,6 +1,7 @@
 ---
 managed_by: spectri
 description: "Create or update spec-level AGENTS.md to track incomplete work state for multi-agent handoffs"
+model: sonnet
 family: spectri-trail
 origin:
   source: spectri
@@ -8,7 +9,7 @@ injections_applied:
   - user-input
   - finalization-verification
 build_info:
-  built_at: 2026-03-15T10:46:04Z
+  built_at: 2026-03-26T01:26:01Z
   manifest_version: 1.1.0
 ---
 # Per-Spec AGENTS.md Management

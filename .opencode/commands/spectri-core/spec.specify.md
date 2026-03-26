@@ -1,6 +1,7 @@
 ---
 managed_by: spectri
 description: "Create or update the feature specification from a natural language feature description."
+model: opus
 family: spectri-core
 origin:
   source: github-spec-kit
@@ -13,7 +14,7 @@ injections_applied:
   - meta-update
   - finalization-verification
 build_info:
-  built_at: 2026-03-15T10:46:02Z
+  built_at: 2026-03-26T01:25:58Z
   manifest_version: 1.1.0
 ---
 # Create Feature Specification

@@ -80,7 +80,7 @@ if [[ -f "$TEMPLATE" ]]; then
     SAFE_FEATURE_NAME=$(escape_sed "$RESOLVED_FEATURE_NAME")
     SAFE_BRANCH_NAME=$(escape_sed "$BRANCH_NAME")
 
-    sed_inplace "s|\[ISO_TIMESTAMP\]|${TIMESTAMP}|g" "$IMPL_PLAN"
+    sed_inplace "s|{{ISO_TIMESTAMP}}|${TIMESTAMP}|g" "$IMPL_PLAN"
     sed_inplace "s|\[AGENT_SESSION_ID\]|${SAFE_SESSION_ID}|g" "$IMPL_PLAN"
     sed_inplace "s|\[FEATURE\]|${SAFE_FEATURE_NAME}|g" "$IMPL_PLAN"
     sed_inplace "s|\[###-feature-name\]|${SAFE_BRANCH_NAME}|g" "$IMPL_PLAN"

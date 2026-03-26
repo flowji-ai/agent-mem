@@ -1,6 +1,7 @@
 ---
 managed_by: spectri
 description: "Create Architecture Decision Record (ADR) to document significant architectural decisions"
+model: opus
 family: spectri-trail
 origin:
   source: spectri
@@ -8,7 +9,7 @@ injections_applied:
   - user-input
   - finalization-verification
 build_info:
-  built_at: 2026-03-15T10:46:04Z
+  built_at: 2026-03-26T01:26:01Z
   manifest_version: 1.1.0
 ---
 # Create Architecture Decision Record

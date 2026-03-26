@@ -1,6 +1,6 @@
 {
   "status": "draft",
-  "created": "[ISO_TIMESTAMP]",
+  "created": "{{ISO_TIMESTAMP}}",
   "created_by": "[AGENT_SESSION_ID]",
   "documents": {
     "spec.md": {

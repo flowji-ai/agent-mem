@@ -1,6 +1,6 @@
 ---
-Date Created: [ISO_TIMESTAMP]
-Date Updated: [ISO_TIMESTAMP]
+Date Created: {{ISO_TIMESTAMP}}
+Date Updated: {{ISO_TIMESTAMP}}
 ---
 
 # Architecture Documentation: [Feature Name]
@@ -249,7 +249,7 @@ flowchart TD
 
 ---
 
-**Last Updated**: [ISO_TIMESTAMP]
+**Last Updated**: {{ISO_TIMESTAMP}}
 **Maintained By**: [Agent or team maintaining this document]
 
 ---

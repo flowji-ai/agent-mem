@@ -1,6 +1,7 @@
 ---
 managed_by: spectri
 description: "Extend an existing tasks.md by adding tasks to align with changes in plan.md (preserving existing tasks) with automatic frontmatter updates, soft validation, and implementation summary creation."
+model: sonnet
 family: spectri-modify
 origin:
   source: spectri
@@ -10,7 +11,7 @@ injections_applied:
   - summary-creation
   - finalization-verification
 build_info:
-  built_at: 2026-03-15T10:46:03Z
+  built_at: 2026-03-26T01:25:59Z
   manifest_version: 1.1.0
 ---
 

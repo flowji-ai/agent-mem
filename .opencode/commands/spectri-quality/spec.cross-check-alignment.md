@@ -1,6 +1,7 @@
 ---
 managed_by: spectri
 description: "Perform a non-destructive cross-artifact consistency and quality analysis across spec.md, plan.md, and tasks.md after task generation."
+model: opus
 family: spectri-quality
 origin:
   source: github-spec-kit
@@ -12,7 +13,7 @@ injections_applied:
   - summary-creation
   - finalization-verification
 build_info:
-  built_at: 2026-03-15T10:46:03Z
+  built_at: 2026-03-26T01:26:00Z
   manifest_version: 1.1.0
 ---
 # Specification Analysis

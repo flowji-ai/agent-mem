@@ -1,11 +1,11 @@
 ---
 # ADR Identification
-id: ADR-{NNNN}
-title: {Decision Cluster Title}
+id: ADR-{{NNNN}}
+title: {{DECISION_TITLE}}
 
 # Status Tracking
 status: Proposed
-date: {YYYY-MM-DD}
+date: {{YYYY-MM-DD}}
 
 # Context Linking
 feature: {NNN-feature-name}
@@ -19,7 +19,7 @@ created_by: {agent or user}
 updated_by: {agent or user}
 ---
 
-# ADR {NNNN}: {Decision Cluster Title}
+# ADR {{NNNN}}: {{DECISION_TITLE}}
 
 ## Decision
 

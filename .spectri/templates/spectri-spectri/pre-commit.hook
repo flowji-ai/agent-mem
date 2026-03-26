@@ -177,5 +177,14 @@ if [[ -x ".spectri/scripts/hooks/work-cycle-reminder.sh" ]]; then
     .spectri/scripts/hooks/work-cycle-reminder.sh
 fi
 
+# Check 9: Meta.json validation (warn-only — never blocks)
+# Runs against staged spec folders to catch meta.json drift before it lands
+if [[ -x ".spectri/scripts/hooks/validate-meta-json.sh" ]]; then
+    SPEC_FOLDERS=$(echo "$STAGED_FILES" | grep -oE 'spectri/specs/0[0-5]-[^/]+/[^/]+/' | sort -u)
+    for folder in $SPEC_FOLDERS; do
+        .spectri/scripts/hooks/validate-meta-json.sh "$folder" || true
+    done
+fi
+
 # Allow commit if all checks pass
 exit 0

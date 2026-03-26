@@ -158,7 +158,7 @@ fi
 # --- Create meta.json ---
 TEMPLATE="$REPO_ROOT/.spectri/templates/spectri-core/meta-template.json"
 if [ -f "$TEMPLATE" ]; then
-    sed -e "s|\[ISO_TIMESTAMP\]|${TIMESTAMP}|g" \
+    sed -e "s|{{ISO_TIMESTAMP}}|${TIMESTAMP}|g" \
         -e "s|\[AGENT_SESSION_ID\]|Unknown|g" \
         "$TEMPLATE" > "$ITEM_DIR/meta.json"
 else

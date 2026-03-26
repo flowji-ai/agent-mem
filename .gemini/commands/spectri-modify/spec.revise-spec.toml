@@ -137,3 +137,4 @@ Before completing this command, verify:
 
 - Governing Spec: `spectri/specs/04-deployed/016-revise-spec-module/spec.md`
 '''
+model = "sonnet"

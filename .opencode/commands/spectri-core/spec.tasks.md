@@ -1,6 +1,7 @@
 ---
 managed_by: spectri
 description: "Generate an actionable, dependency-ordered tasks.md for the feature based on available design artifacts."
+model: sonnet
 family: spectri-core
 origin:
   source: github-spec-kit
@@ -13,7 +14,7 @@ injections_applied:
   - meta-update
   - finalization-verification
 build_info:
-  built_at: 2026-03-15T10:46:02Z
+  built_at: 2026-03-26T01:25:58Z
   manifest_version: 1.1.0
 ---
 # Generate Task List

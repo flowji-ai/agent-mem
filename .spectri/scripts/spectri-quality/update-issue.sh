@@ -25,10 +25,8 @@ REPO_ROOT=$(get_repo_root)
 
 ISSUES_DIR="$REPO_ROOT/spectri/issues"
 
-# Valid priority values
-VALID_PRIORITIES="critical high medium low"
-
 # Source shared libraries
+source "$SCRIPT_DIR/../../lib/validation.sh"
 source "$REPO_ROOT/.spectri/lib/logging.sh"
 source "$REPO_ROOT/.spectri/lib/timestamp-utils.sh"
 
@@ -55,16 +53,6 @@ print_usage() {
     echo "  - status (use resolve-issue.sh, reopen-issue.sh)"
     echo "  - created_by_agent, created_by_user (historical)"
     echo "  - opened, closed (historical)"
-}
-
-validate_priority() {
-    local priority="$1"
-    for valid in $VALID_PRIORITIES; do
-        if [[ "$priority" == "$valid" ]]; then
-            return 0
-        fi
-    done
-    return 1
 }
 
 list_open_issues() {

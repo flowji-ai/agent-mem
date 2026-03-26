@@ -16,7 +16,7 @@
 #
 # Dependencies: jq
 
-set -e
+set -euo pipefail
 
 # --- Configuration ---
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -105,7 +105,7 @@ validate_spec() {
         if [[ "$file_exists" == "true" && "$meta_tracked" == "false" ]]; then
             discrepancies+=("[$spec_name] $doc EXISTS but meta.json shows created: null")
             has_errors=true
-            ((TOTAL_DISCREPANCIES++))
+            TOTAL_DISCREPANCIES=$(( TOTAL_DISCREPANCIES + 1 ))
 
             if [[ "$fix_mode" == "true" ]]; then
                 # Auto-fix: update meta.json with current timestamp
@@ -118,7 +118,7 @@ validate_spec() {
         elif [[ "$file_exists" == "false" && "$meta_tracked" == "true" ]]; then
             discrepancies+=("[$spec_name] $doc MISSING but meta.json claims created: $meta_created")
             has_errors=true
-            ((TOTAL_DISCREPANCIES++))
+            TOTAL_DISCREPANCIES=$(( TOTAL_DISCREPANCIES + 1 ))
         fi
     done
 
@@ -142,7 +142,7 @@ validate_spec() {
         if [[ "$meta_entry" == "null" ]]; then
             discrepancies+=("[$spec_name] $filename EXISTS but not tracked in meta.json")
             has_errors=true
-            ((TOTAL_DISCREPANCIES++))
+            TOTAL_DISCREPANCIES=$(( TOTAL_DISCREPANCIES + 1 ))
         fi
     done
 
@@ -235,12 +235,12 @@ if [[ "$ALL_MODE" == "true" ]]; then
     while IFS= read -r spec_dir; do
         [[ -z "$spec_dir" ]] && continue
         spec_dir="${spec_dir%/}"  # Remove trailing slash
-        ((TOTAL_SPECS++))
+        TOTAL_SPECS=$(( TOTAL_SPECS + 1 ))
 
         if validate_spec "$spec_dir" "$FIX_MODE"; then
-            ((VALID_SPECS++))
+            VALID_SPECS=$(( VALID_SPECS + 1 ))
         else
-            ((INVALID_SPECS++))
+            INVALID_SPECS=$(( INVALID_SPECS + 1 ))
         fi
     done < <(find_all_specs)
 

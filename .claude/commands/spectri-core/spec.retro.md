@@ -1,6 +1,7 @@
 ---
 managed_by: spectri
 description: "Create a retrospective spec for an already-implemented feature. Documents what EXISTS, not what SHOULD exist."
+model: sonnet
 family: spectri-core
 origin:
   source: github-spec-kit
@@ -13,7 +14,7 @@ injections_applied:
   - meta-update
   - finalization-verification
 build_info:
-  built_at: 2026-03-15T10:46:05Z
+  built_at: 2026-03-26T01:26:02Z
   manifest_version: 1.1.0
 ---
 # Create Retrospective Specification
