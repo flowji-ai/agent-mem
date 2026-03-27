@@ -67,6 +67,14 @@ Ostii deliberately keeps chats **short and focused**, then closes them to preser
 
 An earlier Ostii project (currently stalled) with overlapping goals: reviewing chats for global rules and patterns to feed back to agents globally. Review ChatCatcher before building to avoid duplicating work and to surface useful patterns.
 
+## Related Project — CASS Memory System
+
+An independent open-source project with significant overlap to both ChatCatcher and Agent Mem's vision. CASS distills AI coding sessions into confidence-scored procedural rules with decay (90-day half-life) and anti-pattern tracking. Three-layer architecture: episodic (raw logs), working (diary entries), procedural (rules in playbooks). Cross-agent from day one. MIT licensed, TypeScript/Bun.
+
+- **Source**: https://github.com/Dicklesworthstone/cass_memory_system
+- **Radar entry**: `tool-deck/website/content/tools-radar/cass-memory-system.md`
+- **Relevance**: Validates the distillation direction. Confidence/decay model is prior art for Phase 3 rule extraction. Not an integration candidate (different storage architecture) but the rule model is worth studying.
+
 ## What This Is
 
 This is a standalone project, separate from Spectri (though Spectri is used for spec management within this repo).
