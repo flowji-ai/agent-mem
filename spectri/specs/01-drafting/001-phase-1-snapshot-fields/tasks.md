@@ -27,13 +27,13 @@ description: "Task list for Phase 1 — Snapshot Fields, Manual Capture & Noise 
 
 **Purpose**: Checkpoint and verify environment before implementation
 
-- [ ] T001 Verify Bun runtime and `bun test` work in the repo
-- [ ] T002 Verify claude-mem worker starts on port 37777 (`bun run src/services/worker-service.ts`)
-- [ ] T003 Verify existing tests pass (`bun test`)
-- [ ] T004 Back up `~/.claude-mem/claude-mem.db` before schema changes
+- [X] T001 Verify Bun runtime and `bun test` work in the repo
+- [X] T002 Verify claude-mem worker starts on port 37777 (`bun run src/services/worker-service.ts`)
+- [X] T003 Verify existing tests pass (`bun test`)
+- [X] T004 Back up `~/.claude-mem/claude-mem.db` before schema changes
 
-- [ ] T005 [Checkpoint] Create implementation summary documenting setup verification
-- [ ] T006 [Checkpoint] Commit work + summary to Git
+- [X] T005 [Checkpoint] Create implementation summary documenting setup verification
+- [X] T006 [Checkpoint] Commit work + summary to Git
 
 ---
 
