@@ -98,7 +98,16 @@ describe('SessionStore', () => {
       learned: 'Things',
       completed: 'Done',
       next_steps: 'More',
-      notes: null
+      notes: null,
+      title: null,
+      decision_log: null,
+      decision_trade_offs: null,
+      constraints_log: null,
+      mistakes: null,
+      gotchas: null,
+      commit_ref: null,
+      open_questions: null,
+      unresolved: null,
     };
 
     const pastTimestamp = 1650000000000;

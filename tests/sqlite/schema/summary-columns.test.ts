@@ -23,6 +23,8 @@ describe('Summary Column Constants', () => {
     expect(SUMMARY_CONTENT_COLUMNS).toEqual([
       'request', 'investigated', 'learned', 'completed', 'next_steps',
       'files_read', 'files_edited', 'notes',
+      'title', 'decision_log', 'decision_trade_offs', 'constraints_log',
+      'mistakes', 'gotchas', 'commit_ref', 'open_questions', 'unresolved',
     ]);
   });
 
@@ -30,6 +32,7 @@ describe('Summary Column Constants', () => {
     expect(SUMMARY_META_COLUMNS).toEqual([
       'id', 'memory_session_id', 'project', 'prompt_number', 'discovery_tokens',
       'created_at', 'created_at_epoch',
+      'importance', 'hidden_fields', 'source',
     ]);
   });
 
@@ -43,14 +46,19 @@ describe('Summary Column Constants', () => {
   it('SUMMARY_FTS_COLUMNS includes text-searchable fields', () => {
     expect(SUMMARY_FTS_COLUMNS).toEqual([
       'request', 'investigated', 'learned', 'completed', 'next_steps', 'notes',
+      'title', 'decision_log', 'decision_trade_offs', 'constraints_log',
+      'mistakes', 'gotchas', 'commit_ref', 'open_questions', 'unresolved',
     ]);
   });
 
   it('SUMMARY_INSERT_COLUMNS includes all non-auto-increment columns', () => {
     expect(SUMMARY_INSERT_COLUMNS).toEqual([
       'memory_session_id', 'project', 'request', 'investigated', 'learned', 'completed',
-      'next_steps', 'files_read', 'files_edited', 'notes', 'prompt_number', 'discovery_tokens',
-      'created_at', 'created_at_epoch',
+      'next_steps', 'files_read', 'files_edited', 'notes',
+      'title', 'decision_log', 'decision_trade_offs', 'constraints_log',
+      'mistakes', 'gotchas', 'commit_ref', 'open_questions', 'unresolved',
+      'prompt_number', 'discovery_tokens', 'created_at', 'created_at_epoch',
+      'importance', 'hidden_fields', 'source',
     ]);
     // INSERT should not include 'id' (auto-increment)
     expect(SUMMARY_INSERT_COLUMNS).not.toContain('id');
@@ -156,14 +164,26 @@ describe('INSERT Roundtrip', () => {
           files_read TEXT,
           files_edited TEXT,
           notes TEXT,
+          title TEXT,
+          decision_log TEXT,
+          decision_trade_offs TEXT,
+          constraints_log TEXT,
+          mistakes TEXT,
+          gotchas TEXT,
+          commit_ref TEXT,
+          open_questions TEXT,
+          unresolved TEXT,
           prompt_number INTEGER,
           discovery_tokens INTEGER NOT NULL DEFAULT 0,
           created_at TEXT NOT NULL,
-          created_at_epoch INTEGER NOT NULL
+          created_at_epoch INTEGER NOT NULL,
+          importance INTEGER DEFAULT 5,
+          hidden_fields TEXT,
+          source TEXT DEFAULT 'auto'
         )
       `);
 
-      const testValues = {
+      const testValues: Record<string, string | number | null> = {
         memory_session_id: 'test-session-123',
         project: '/test/project',
         request: 'test_request',
@@ -174,10 +194,22 @@ describe('INSERT Roundtrip', () => {
         files_read: '["file1.ts"]',
         files_edited: '["file2.ts"]',
         notes: 'test_notes',
+        title: 'test_title',
+        decision_log: 'test_decision_log',
+        decision_trade_offs: 'test_trade_offs',
+        constraints_log: 'test_constraints',
+        mistakes: 'test_mistakes',
+        gotchas: 'test_gotchas',
+        commit_ref: 'test_commit',
+        open_questions: 'test_questions',
+        unresolved: 'test_unresolved',
         prompt_number: 5,
         discovery_tokens: 1234,
         created_at: '2026-01-01T00:00:00.000Z',
         created_at_epoch: 1767225600000,
+        importance: 7,
+        hidden_fields: '["gotchas"]',
+        source: 'manual',
       };
 
       // Build INSERT using central constants
@@ -214,6 +246,9 @@ describe('Schema Roundtrip', () => {
           discovery_tokens INTEGER NOT NULL DEFAULT 0,
           created_at TEXT NOT NULL,
           created_at_epoch INTEGER NOT NULL,
+          importance INTEGER DEFAULT 5,
+          hidden_fields TEXT,
+          source TEXT DEFAULT 'auto',
           request TEXT,
           investigated TEXT,
           learned TEXT,
@@ -221,7 +256,16 @@ describe('Schema Roundtrip', () => {
           next_steps TEXT,
           files_read TEXT,
           files_edited TEXT,
-          notes TEXT
+          notes TEXT,
+          title TEXT,
+          decision_log TEXT,
+          decision_trade_offs TEXT,
+          constraints_log TEXT,
+          mistakes TEXT,
+          gotchas TEXT,
+          commit_ref TEXT,
+          open_questions TEXT,
+          unresolved TEXT
         )
       `);
       const columns = db.prepare('PRAGMA table_info(session_summaries)').all() as { name: string }[];

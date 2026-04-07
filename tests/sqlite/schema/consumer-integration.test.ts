@@ -14,7 +14,11 @@ describe('Consumer Type Alignment', () => {
   it('SummaryInput covers all content columns or documents exclusions', () => {
     // SummaryInput should include all FTS-indexed content fields
     // files_read and files_edited are excluded from SummaryInput (populated by import, not live capture)
-    const summaryInputFields: (keyof SummaryInput)[] = ['request', 'investigated', 'learned', 'completed', 'next_steps', 'notes'];
+    const summaryInputFields: (keyof SummaryInput)[] = [
+      'request', 'investigated', 'learned', 'completed', 'next_steps', 'notes',
+      'title', 'decision_log', 'decision_trade_offs', 'constraints_log',
+      'mistakes', 'gotchas', 'commit_ref', 'open_questions', 'unresolved',
+    ];
 
     for (const field of SUMMARY_FTS_COLUMNS) {
       expect(summaryInputFields).toContain(field as keyof SummaryInput);
@@ -22,7 +26,11 @@ describe('Consumer Type Alignment', () => {
   });
 
   it('ParsedSummary covers all FTS columns', () => {
-    const parsedFields: (keyof ParsedSummary)[] = ['request', 'investigated', 'learned', 'completed', 'next_steps', 'notes'];
+    const parsedFields: (keyof ParsedSummary)[] = [
+      'request', 'investigated', 'learned', 'completed', 'next_steps', 'notes',
+      'title', 'decision_log', 'decision_trade_offs', 'constraints_log',
+      'mistakes', 'gotchas', 'commit_ref', 'open_questions', 'unresolved',
+    ];
 
     for (const field of SUMMARY_FTS_COLUMNS) {
       expect(parsedFields).toContain(field as keyof ParsedSummary);
