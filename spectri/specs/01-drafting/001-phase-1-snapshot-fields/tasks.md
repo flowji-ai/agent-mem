@@ -45,21 +45,21 @@ description: "Task list for Phase 1 — Snapshot Fields, Manual Capture & Noise 
 
 ### Tests (MUST write first — verify they FAIL)
 
-- [ ] T007 Write migration test in `tests/sqlite/migration-schema.test.ts` — verify migration runs cleanly, all new columns exist, FTS5 triggers fire on INSERT/UPDATE/DELETE, old records survive with null new fields
-- [ ] T008 Write parser test in `tests/snapshot-parser.test.ts` — verify parser correctly extracts new XML fields, handles missing fields (returns undefined not filler), handles old-format XML gracefully
+- [X] T007 Write migration test in `tests/sqlite/migration-schema.test.ts` — verify migration runs cleanly, all new columns exist, FTS5 triggers fire on INSERT/UPDATE/DELETE, old records survive with null new fields
+- [X] T008 Write parser test in `tests/snapshot-parser.test.ts` — verify parser correctly extracts new XML fields, handles missing fields (returns undefined not filler), handles old-format XML gracefully
 
 ### Implementation (makes tests pass)
 
-- [ ] T009 Determine next migration version number by reading `src/services/sqlite/migrations/runner.ts` and finding the highest existing version
-- [ ] T010 Add migration as a new private method in `src/services/sqlite/migrations/runner.ts` following the existing pattern (version check + ALTER TABLE). Columns: `title TEXT`, `decision_log TEXT`, `decision_trade_offs TEXT`, `constraints_log TEXT`, `mistakes TEXT`, `gotchas TEXT`, `commit_ref TEXT`, `open_questions TEXT`, `unresolved TEXT`, `importance INTEGER DEFAULT 5`, `hidden_fields TEXT`, `source TEXT DEFAULT 'auto'`. T010 and T011 MUST be in the same migration method (atomic).
-- [ ] T011 In the same migration method as T010, update FTS5 virtual table and triggers — DROP existing `session_summaries_fts` and its three triggers (`_ai`, `_ad`, `_au`), CREATE new FTS5 table indexing the new columns, CREATE new sync triggers. Also check `src/services/sqlite/SessionSearch.ts` for a duplicate `ensureFTSTables()` method and update if present.
-- [ ] T012 [P] Update `src/services/sqlite/summaries/types.ts` — add new fields to `SummaryInput`, `SessionSummary`, `FullSummary`, `RecentSummary`, `SummaryWithSessionInfo` interfaces
-- [ ] T013 [P] Update `src/sdk/parser.ts` — update `ParsedSummary` interface and the parser function to extract new XML fields (`decision_log`, `decision_trade_offs`, `constraints_log`, `mistakes`, `gotchas`, `commit_ref`, `open_questions`, `unresolved`, `title`). Verify the actual function name in the file (may be `parseSummary` singular).
-- [ ] T014 [P] Update `src/services/sqlite/summaries/store.ts` — update `storeSummary()` INSERT statement to include all new columns
-- [ ] T015 [P] Update `src/types/database.ts` — add new fields to `SessionSummaryRecord`, add `'mistake'` to `ObservationRecord` type union. Keep `'discovery'` in the union for backward compatibility with existing DB records.
-- [ ] T016 [P] Update `src/services/sqlite/summaries/get.ts` — update SELECT column lists to include new fields
-- [ ] T017 [P] Update `src/services/sqlite/summaries/recent.ts` — update SELECT column lists to include new fields
-- [ ] T017a Grep codebase for `investigated|learned|completed|next_steps` to find any other files with hardcoded column lists (e.g. `ResponseProcessor.ts`, `worker-types.ts`, `PaginationHelper.ts`, `ChromaSync.ts`, `SessionStore.ts`) and update them all to include new fields
+- [X] T009 Determine next migration version number by reading `src/services/sqlite/migrations/runner.ts` and finding the highest existing version
+- [X] T010 Add migration as a new private method in `src/services/sqlite/migrations/runner.ts` following the existing pattern (version check + ALTER TABLE). Columns: `title TEXT`, `decision_log TEXT`, `decision_trade_offs TEXT`, `constraints_log TEXT`, `mistakes TEXT`, `gotchas TEXT`, `commit_ref TEXT`, `open_questions TEXT`, `unresolved TEXT`, `importance INTEGER DEFAULT 5`, `hidden_fields TEXT`, `source TEXT DEFAULT 'auto'`. T010 and T011 MUST be in the same migration method (atomic).
+- [X] T011 In the same migration method as T010, update FTS5 virtual table and triggers — DROP existing `session_summaries_fts` and its three triggers (`_ai`, `_ad`, `_au`), CREATE new FTS5 table indexing the new columns, CREATE new sync triggers. Also check `src/services/sqlite/SessionSearch.ts` for a duplicate `ensureFTSTables()` method and update if present.
+- [X] T012 [P] Update `src/services/sqlite/summaries/types.ts` — add new fields to `SummaryInput`, `SessionSummary`, `FullSummary`, `RecentSummary`, `SummaryWithSessionInfo` interfaces
+- [X] T013 [P] Update `src/sdk/parser.ts` — update `ParsedSummary` interface and the parser function to extract new XML fields (`decision_log`, `decision_trade_offs`, `constraints_log`, `mistakes`, `gotchas`, `commit_ref`, `open_questions`, `unresolved`, `title`). Verify the actual function name in the file (may be `parseSummary` singular).
+- [X] T014 [P] Update `src/services/sqlite/summaries/store.ts` — update `storeSummary()` INSERT statement to include all new columns
+- [X] T015 [P] Update `src/types/database.ts` — add new fields to `SessionSummaryRecord`, add `'mistake'` to `ObservationRecord` type union. Keep `'discovery'` in the union for backward compatibility with existing DB records.
+- [X] T016 [P] Update `src/services/sqlite/summaries/get.ts` — update SELECT column lists to include new fields
+- [X] T017 [P] Update `src/services/sqlite/summaries/recent.ts` — update SELECT column lists to include new fields
+- [X] T017a Grep codebase for `investigated|learned|completed|next_steps` to find any other files with hardcoded column lists (e.g. `ResponseProcessor.ts`, `worker-types.ts`, `PaginationHelper.ts`, `ChromaSync.ts`, `SessionStore.ts`) and update them all to include new fields
 
 - [ ] T018 [Checkpoint] Create implementation summary documenting schema & types work
 - [ ] T019 [Checkpoint] Commit work + summary to Git
