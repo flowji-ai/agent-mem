@@ -134,9 +134,9 @@ export function storeObservationsAndMarkComplete(
         discoveryTokens,
         timestampIso,
         timestampEpoch,
-        null, // importance
+        5, // importance — default
         null, // hidden_fields
-        null, // source
+        'auto', // source — default
       );
       summaryId = Number(result.lastInsertRowid);
     }
@@ -266,9 +266,9 @@ export function storeObservations(
         discoveryTokens,
         timestampIso,
         timestampEpoch,
-        null, // importance
+        5, // importance — default
         null, // hidden_fields
-        null, // source
+        'auto', // source — default
       );
       summaryId = Number(result.lastInsertRowid);
     }

@@ -111,7 +111,7 @@ description: "Task list for Phase 1 — Snapshot Fields, Manual Capture & Noise 
 
 ### Tests (MUST write first — verify they FAIL)
 
-- [ ] T034 [P] [US2] Write MCP tool test in `tests/manual-capture.test.ts` — verify `capture_to_mem` creates a record with specified fields, importance 10, source='manual', empty fields omitted
+- [X] T034 [P] [US2] Write MCP tool test in `tests/manual-capture.test.ts` — verify `capture_to_mem` creates a record with specified fields, importance 10, source='manual', empty fields omitted
 - [ ] T035 [P] [US2] Write dedup test in `tests/manual-capture.test.ts` — verify that when manual capture occurs, the auto-snapshot for the same response cycle is suppressed (exactly one record created)
 - [ ] T036 [P] [US2] Write empty-capture test in `tests/manual-capture.test.ts` — verify that calling `capture_to_mem` with no substantive content creates no record in the database
 

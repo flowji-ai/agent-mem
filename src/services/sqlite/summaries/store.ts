@@ -62,10 +62,10 @@ export function storeSummary(
     discoveryTokens,
     timestampIso,
     timestampEpoch,
-    // Phase 1 scaffolding (defaults)
-    null, // importance — uses DB default (5)
+    // Phase 1 scaffolding
+    5, // importance — default
     null, // hidden_fields
-    null, // source — uses DB default ('auto')
+    'auto', // source — default
   );
 
   return {
