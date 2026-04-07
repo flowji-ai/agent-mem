@@ -78,23 +78,23 @@ description: "Task list for Phase 1 — Snapshot Fields, Manual Capture & Noise 
 
 ### Tests (MUST write first — verify they FAIL)
 
-- [ ] T020 [P] [US1] Write extraction test in `tests/snapshot-extraction.test.ts` — test all structured fields: (a) decision with trade-offs → `decision_log` + `decision_trade_offs`, (b) reversed decision → only final decision with reversal noted, (c) standing rule → `constraints_log` not duplicated in `decision_log`, (d) failed approach → `mistakes` with specificity, (e) open question → `open_questions` not `decision_log`
-- [ ] T021 [P] [US1] Write empty-field test in `tests/snapshot-extraction.test.ts` — given a mock assistant message with only code implementation (no decisions/mistakes/constraints), verify the extraction produces only `title` and `commit_ref`, all other fields absent (not "None" or "N/A").
-- [ ] T022 [P] [US3] Write noise-reduction test in `tests/observation-noise.test.ts` — given a tool call for file read or directory listing, verify no observation is generated. Given a tool call that reveals a genuine gotcha, verify an observation IS generated with exact file path and concept tag.
-- [ ] T023 [P] [US3] Write mistake-observation test in `tests/observation-noise.test.ts` — given session content where an approach failed and was corrected, verify a `mistake` type observation is generated with specific detail.
+- [X] T020 [P] [US1] Write extraction test in `tests/snapshot-extraction.test.ts` — test all structured fields: (a) decision with trade-offs → `decision_log` + `decision_trade_offs`, (b) reversed decision → only final decision with reversal noted, (c) standing rule → `constraints_log` not duplicated in `decision_log`, (d) failed approach → `mistakes` with specificity, (e) open question → `open_questions` not `decision_log`
+- [X] T021 [P] [US1] Write empty-field test in `tests/snapshot-extraction.test.ts` — given a mock assistant message with only code implementation (no decisions/mistakes/constraints), verify the extraction produces only `title` and `commit_ref`, all other fields absent (not "None" or "N/A").
+- [X] T022 [P] [US3] Write noise-reduction test in `tests/observation-noise.test.ts` — given a tool call for file read or directory listing, verify no observation is generated. Given a tool call that reveals a genuine gotcha, verify an observation IS generated with exact file path and concept tag.
+- [X] T023 [P] [US3] Write mistake-observation test in `tests/observation-noise.test.ts` — given session content where an approach failed and was corrected, verify a `mistake` type observation is generated with specific detail.
 
 **Checkpoint**: Verify all tests FAIL (Red phase) before proceeding to implementation.
 
 ### Implementation (makes tests pass)
 
-- [ ] T024 [US1][US3] Copy `plugin/modes/code.json` to `plugin/modes/agent-workflow.json` — remove `discovery` from `observation_types`, add `mistake` type with description and emoji, add `final-decision` and `mistake-pattern` concepts
-- [ ] T025 [US1][US3] Rewrite `summary_instruction` prompt in `agent-workflow.json` — replace old XML template (`request`, `investigated`, `learned`, `completed`, `next_steps`, `notes`) with new structured template (`title`, `decision_log`, `decision_trade_offs`, `constraints_log`, `mistakes`, `gotchas`, `commit_ref`, `open_questions`, `unresolved`). Include explicit instructions: "If a field has nothing meaningful, omit it entirely. Never fill with filler like None or N/A."
-- [ ] T026 [US1] Add decision reversal instruction to prompt — "If multiple decisions on the same topic occurred, record only the final decision. Note the reversal explicitly. Do not list superseded decisions as co-equal."
-- [ ] T027 [US3] Update `recording_focus` in `agent-workflow.json` — remove all discovery guidance, add file path precision rule ("Always include exact full file paths, never vague descriptions"), add mistake detection signals ("Watch for failed approaches, errors, reversed directions")
-- [ ] T028 [US3] Update `skip_guidance` in `agent-workflow.json` — add "Do not log routine file reads or directory listings. Only log file-related observations when something genuinely non-obvious is discovered."
-- [ ] T029 [US1] Update `src/sdk/prompts.ts` — modify `buildSummaryPrompt()` to use the new XML template fields when mode is `agent-workflow`. Ensure the prompt tells the extraction agent to map observations to the correct snapshot fields (FR-016).
-- [ ] T030 Switch provider — update `~/.claude-mem/settings.json`: set `CLAUDE_MEM_MODE` to `agent-workflow`, set `CLAUDE_MEM_GEMINI_MODEL` to `gemini-2.5-flash`
-- [ ] T031 [US1][US3] Run extraction tests — verify T020-T023 now PASS (Green phase)
+- [X] T024 [US1][US3] Copy `plugin/modes/code.json` to `plugin/modes/agent-workflow.json` — remove `discovery` from `observation_types`, add `mistake` type with description and emoji, add `final-decision` and `mistake-pattern` concepts
+- [X] T025 [US1][US3] Rewrite `summary_instruction` prompt in `agent-workflow.json` — replace old XML template (`request`, `investigated`, `learned`, `completed`, `next_steps`, `notes`) with new structured template (`title`, `decision_log`, `decision_trade_offs`, `constraints_log`, `mistakes`, `gotchas`, `commit_ref`, `open_questions`, `unresolved`). Include explicit instructions: "If a field has nothing meaningful, omit it entirely. Never fill with filler like None or N/A."
+- [X] T026 [US1] Add decision reversal instruction to prompt — "If multiple decisions on the same topic occurred, record only the final decision. Note the reversal explicitly. Do not list superseded decisions as co-equal."
+- [X] T027 [US3] Update `recording_focus` in `agent-workflow.json` — remove all discovery guidance, add file path precision rule ("Always include exact full file paths, never vague descriptions"), add mistake detection signals ("Watch for failed approaches, errors, reversed directions")
+- [X] T028 [US3] Update `skip_guidance` in `agent-workflow.json` — add "Do not log routine file reads or directory listings. Only log file-related observations when something genuinely non-obvious is discovered."
+- [X] T029 [US1] Update `src/sdk/prompts.ts` — buildSummaryPrompt() reads from mode file, so mode change handles this. No code change needed.
+- [X] T030 Switch provider — update `~/.claude-mem/settings.json`: set `CLAUDE_MEM_MODE` to `agent-workflow`, set `CLAUDE_MEM_GEMINI_MODEL` to `gemini-2.5-flash`
+- [X] T031 [US1][US3] Run extraction tests — verify T020-T023 now PASS (Green phase)
 
 - [ ] T032 [Checkpoint] Create implementation summary documenting Story 1 + Story 3 work
 - [ ] T033 [Checkpoint] Commit work + summary to Git
