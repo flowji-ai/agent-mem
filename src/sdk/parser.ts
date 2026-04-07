@@ -24,6 +24,16 @@ export interface ParsedSummary {
   completed: string | null;
   next_steps: string | null;
   notes: string | null;
+  // Phase 1 structured fields
+  title: string | null;
+  decision_log: string | null;
+  decision_trade_offs: string | null;
+  constraints_log: string | null;
+  mistakes: string | null;
+  gotchas: string | null;
+  commit_ref: string | null;
+  open_questions: string | null;
+  unresolved: string | null;
 }
 
 /**
@@ -125,29 +135,26 @@ export function parseSummary(text: string, sessionId?: number): ParsedSummary | 
 
   const summaryContent = summaryMatch[1];
 
-  // Extract fields
+  // Extract old fields
   const request = extractField(summaryContent, 'request');
   const investigated = extractField(summaryContent, 'investigated');
   const learned = extractField(summaryContent, 'learned');
   const completed = extractField(summaryContent, 'completed');
   const next_steps = extractField(summaryContent, 'next_steps');
-  const notes = extractField(summaryContent, 'notes'); // Optional
+  const notes = extractField(summaryContent, 'notes');
 
-  // NOTE FROM THEDOTMACK: 100% of the time we must SAVE the summary, even if fields are missing. 10/24/2025 
-  // NEVER DO THIS NONSENSE AGAIN.
+  // Extract Phase 1 structured fields
+  const title = extractField(summaryContent, 'title');
+  const decision_log = extractField(summaryContent, 'decision_log');
+  const decision_trade_offs = extractField(summaryContent, 'decision_trade_offs');
+  const constraints_log = extractField(summaryContent, 'constraints_log');
+  const mistakes = extractField(summaryContent, 'mistakes');
+  const gotchas = extractField(summaryContent, 'gotchas');
+  const commit_ref = extractField(summaryContent, 'commit_ref');
+  const open_questions = extractField(summaryContent, 'open_questions');
+  const unresolved = extractField(summaryContent, 'unresolved');
 
-  // Validate required fields are present (notes is optional)
-  // if (!request || !investigated || !learned || !completed || !next_steps) {
-  //   logger.warn('PARSER', 'Summary missing required fields', {
-  //     sessionId,
-  //     hasRequest: !!request,
-  //     hasInvestigated: !!investigated,
-  //     hasLearned: !!learned,
-  //     hasCompleted: !!completed,
-  //     hasNextSteps: !!next_steps
-  //   });
-  //   return null;
-  // }
+  // NOTE FROM THEDOTMACK: 100% of the time we must SAVE the summary, even if fields are missing. 10/24/2025
 
   return {
     request,
@@ -155,7 +162,16 @@ export function parseSummary(text: string, sessionId?: number): ParsedSummary | 
     learned,
     completed,
     next_steps,
-    notes
+    notes,
+    title,
+    decision_log,
+    decision_trade_offs,
+    constraints_log,
+    mistakes,
+    gotchas,
+    commit_ref,
+    open_questions,
+    unresolved,
   };
 }
 

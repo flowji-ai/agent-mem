@@ -35,6 +35,7 @@ export class MigrationRunner {
     this.addOnUpdateCascadeToForeignKeys();
     this.addObservationContentHashColumn();
     this.addSessionCustomTitleColumn();
+    this.addPhase1SnapshotFields();
   }
 
   /**
@@ -842,5 +843,87 @@ export class MigrationRunner {
     }
 
     this.db.prepare('INSERT OR IGNORE INTO schema_versions (version, applied_at) VALUES (?, ?)').run(23, new Date().toISOString());
+  }
+
+  /**
+   * Migration 24: Add Phase 1 structured snapshot fields
+   *
+   * Adds structured fields to session_summaries for decision-oriented memory capture.
+   * Also updates FTS5 virtual table and triggers to index the new fields.
+   */
+  private addPhase1SnapshotFields(): void {
+    const applied = this.db.prepare('SELECT version FROM schema_versions WHERE version = ?').get(24) as SchemaVersion | undefined;
+    if (applied) return;
+
+    const tableInfo = this.db.query('PRAGMA table_info(session_summaries)').all() as TableColumnInfo[];
+    const existingColumns = new Set(tableInfo.map(col => col.name));
+
+    // New structured content fields
+    const newColumns: Array<{ name: string; type: string; defaultValue?: string }> = [
+      { name: 'title', type: 'TEXT' },
+      { name: 'decision_log', type: 'TEXT' },
+      { name: 'decision_trade_offs', type: 'TEXT' },
+      { name: 'constraints_log', type: 'TEXT' },
+      { name: 'mistakes', type: 'TEXT' },
+      { name: 'gotchas', type: 'TEXT' },
+      { name: 'commit_ref', type: 'TEXT' },
+      { name: 'open_questions', type: 'TEXT' },
+      { name: 'unresolved', type: 'TEXT' },
+      // Scaffolding for future phases
+      { name: 'importance', type: 'INTEGER', defaultValue: '5' },
+      { name: 'hidden_fields', type: 'TEXT' },
+      { name: 'source', type: 'TEXT', defaultValue: "'auto'" },
+    ];
+
+    for (const col of newColumns) {
+      if (!existingColumns.has(col.name)) {
+        const defaultClause = col.defaultValue ? ` DEFAULT ${col.defaultValue}` : '';
+        this.db.run(`ALTER TABLE session_summaries ADD COLUMN ${col.name} ${col.type}${defaultClause}`);
+        logger.debug('DB', `Added ${col.name} column to session_summaries`);
+      }
+    }
+
+    // Update FTS5: drop old table and triggers, recreate with new columns
+    this.db.run('DROP TRIGGER IF EXISTS session_summaries_ai');
+    this.db.run('DROP TRIGGER IF EXISTS session_summaries_ad');
+    this.db.run('DROP TRIGGER IF EXISTS session_summaries_au');
+    this.db.run('DROP TABLE IF EXISTS session_summaries_fts');
+
+    // Recreate FTS5 with expanded column set (old + new text fields)
+    this.db.run(`CREATE VIRTUAL TABLE IF NOT EXISTS session_summaries_fts USING fts5(
+      request, investigated, learned, completed, next_steps, notes,
+      title, decision_log, decision_trade_offs, constraints_log, mistakes, gotchas,
+      commit_ref, open_questions, unresolved,
+      content='session_summaries',
+      content_rowid='id'
+    )`);
+
+    // Repopulate FTS from existing data
+    this.db.run(`INSERT INTO session_summaries_fts(rowid, request, investigated, learned, completed, next_steps, notes,
+      title, decision_log, decision_trade_offs, constraints_log, mistakes, gotchas, commit_ref, open_questions, unresolved)
+      SELECT id, request, investigated, learned, completed, next_steps, notes,
+      title, decision_log, decision_trade_offs, constraints_log, mistakes, gotchas, commit_ref, open_questions, unresolved
+      FROM session_summaries`);
+
+    // Recreate sync triggers with all columns
+    const ftsCols = 'request, investigated, learned, completed, next_steps, notes, title, decision_log, decision_trade_offs, constraints_log, mistakes, gotchas, commit_ref, open_questions, unresolved';
+    const newRefs = ftsCols.split(', ').map(c => `new.${c}`).join(', ');
+    const oldRefs = ftsCols.split(', ').map(c => `old.${c}`).join(', ');
+
+    this.db.run(`CREATE TRIGGER IF NOT EXISTS session_summaries_ai AFTER INSERT ON session_summaries BEGIN
+      INSERT INTO session_summaries_fts(rowid, ${ftsCols}) VALUES (new.id, ${newRefs});
+    END`);
+
+    this.db.run(`CREATE TRIGGER IF NOT EXISTS session_summaries_ad AFTER DELETE ON session_summaries BEGIN
+      INSERT INTO session_summaries_fts(session_summaries_fts, rowid, ${ftsCols}) VALUES('delete', old.id, ${oldRefs});
+    END`);
+
+    this.db.run(`CREATE TRIGGER IF NOT EXISTS session_summaries_au AFTER UPDATE ON session_summaries BEGIN
+      INSERT INTO session_summaries_fts(session_summaries_fts, rowid, ${ftsCols}) VALUES('delete', old.id, ${oldRefs});
+      INSERT INTO session_summaries_fts(rowid, ${ftsCols}) VALUES (new.id, ${newRefs});
+    END`);
+
+    logger.debug('DB', 'Migration 24: Added Phase 1 snapshot fields and updated FTS5');
+    this.db.prepare('INSERT OR IGNORE INTO schema_versions (version, applied_at) VALUES (?, ?)').run(24, new Date().toISOString());
   }
 }

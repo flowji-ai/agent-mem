@@ -48,10 +48,24 @@ export function storeSummary(
     null, // files_read — populated by import, not live capture
     null, // files_edited — populated by import, not live capture
     summary.notes,
+    // Phase 1 structured fields
+    summary.title || null,
+    summary.decision_log || null,
+    summary.decision_trade_offs || null,
+    summary.constraints_log || null,
+    summary.mistakes || null,
+    summary.gotchas || null,
+    summary.commit_ref || null,
+    summary.open_questions || null,
+    summary.unresolved || null,
     promptNumber || null,
     discoveryTokens,
     timestampIso,
-    timestampEpoch
+    timestampEpoch,
+    // Phase 1 scaffolding (defaults)
+    null, // importance — uses DB default (5)
+    null, // hidden_fields
+    null, // source — uses DB default ('auto')
   );
 
   return {

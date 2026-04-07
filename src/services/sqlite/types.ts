@@ -232,6 +232,20 @@ export interface SessionSummaryRow {
   files_read: string | null; // JSON array
   files_edited: string | null; // JSON array
   notes: string | null;
+  // Phase 1 structured fields
+  title: string | null;
+  decision_log: string | null;
+  decision_trade_offs: string | null;
+  constraints_log: string | null;
+  mistakes: string | null;
+  gotchas: string | null;
+  commit_ref: string | null;
+  open_questions: string | null;
+  unresolved: string | null;
+  // Phase 1 scaffolding
+  importance: number; // default 5
+  hidden_fields: string | null; // JSON array of unchecked field names
+  source: string; // 'auto' or 'manual'
   prompt_number: number | null;
   discovery_tokens: number; // ROI metrics: cumulative tokens spent in this session
   created_at: string;

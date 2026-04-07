@@ -121,10 +121,22 @@ export function storeObservationsAndMarkComplete(
         null, // files_read
         null, // files_edited
         summary.notes,
+        summary.title || null,
+        summary.decision_log || null,
+        summary.decision_trade_offs || null,
+        summary.constraints_log || null,
+        summary.mistakes || null,
+        summary.gotchas || null,
+        summary.commit_ref || null,
+        summary.open_questions || null,
+        summary.unresolved || null,
         promptNumber || null,
         discoveryTokens,
         timestampIso,
-        timestampEpoch
+        timestampEpoch,
+        null, // importance
+        null, // hidden_fields
+        null, // source
       );
       summaryId = Number(result.lastInsertRowid);
     }
@@ -241,10 +253,22 @@ export function storeObservations(
         null, // files_read
         null, // files_edited
         summary.notes,
+        summary.title || null,
+        summary.decision_log || null,
+        summary.decision_trade_offs || null,
+        summary.constraints_log || null,
+        summary.mistakes || null,
+        summary.gotchas || null,
+        summary.commit_ref || null,
+        summary.open_questions || null,
+        summary.unresolved || null,
         promptNumber || null,
         discoveryTokens,
         timestampIso,
-        timestampEpoch
+        timestampEpoch,
+        null, // importance
+        null, // hidden_fields
+        null, // source
       );
       summaryId = Number(result.lastInsertRowid);
     }
