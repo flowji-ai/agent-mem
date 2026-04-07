@@ -25,6 +25,19 @@ export interface Summary {
   learned?: string;
   completed?: string;
   next_steps?: string;
+  notes?: string;
+  // Phase 1 structured fields
+  title?: string;
+  decision_log?: string;
+  decision_trade_offs?: string;
+  constraints_log?: string;
+  mistakes?: string;
+  gotchas?: string;
+  commit_ref?: string;
+  open_questions?: string;
+  unresolved?: string;
+  importance?: number;
+  source?: string;
   created_at_epoch: number;
 }
 

@@ -69,7 +69,7 @@ export interface Observation {
  * Derived from SessionSummaryRow with project made optional for multi-project queries.
  */
 export type SessionSummary =
-  Pick<SessionSummaryRow, 'id' | 'memory_session_id' | 'request' | 'investigated' | 'learned' | 'completed' | 'next_steps' | 'created_at' | 'created_at_epoch'>
+  Pick<SessionSummaryRow, 'id' | 'memory_session_id' | 'request' | 'investigated' | 'learned' | 'completed' | 'next_steps' | 'title' | 'decision_log' | 'decision_trade_offs' | 'constraints_log' | 'mistakes' | 'gotchas' | 'commit_ref' | 'open_questions' | 'unresolved' | 'created_at' | 'created_at_epoch'>
   & { project?: string };
 
 /**
