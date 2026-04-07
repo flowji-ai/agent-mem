@@ -349,6 +349,46 @@ NEVER fetch full details without filtering first. 10x token savings.`,
         }]
       };
     }
+  },
+  {
+    name: 'capture_to_mem',
+    description: 'Manually capture important content as a high-priority memory snapshot. Use when the user says "capture this", "remember this", or wants to preserve specific decisions, conclusions, or agreements. Bypasses automatic extraction — content goes directly to storage with maximum fidelity.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        title: { type: 'string', description: 'One-line name for this snapshot' },
+        decision_log: { type: 'string', description: 'Final decisions made. Format: "Chose X over Y — reason"' },
+        decision_trade_offs: { type: 'string', description: 'What was considered and rejected, and why' },
+        constraints_log: { type: 'string', description: 'Standing rules: "Always X" or "Never Y"' },
+        mistakes: { type: 'string', description: 'What went wrong and what was learned' },
+        gotchas: { type: 'string', description: 'Traps or non-obvious things future agents must know' },
+        commit_ref: { type: 'string', description: 'Git commit hash or message' },
+        open_questions: { type: 'string', description: 'Unresolved decisions needing future answers' },
+        unresolved: { type: 'string', description: 'Dangling state or interrupted work' },
+      },
+      required: ['title']
+    },
+    handler: async (args: any) => {
+      try {
+        const response = await fetch(`${WORKER_BASE_URL}/api/sessions/manual-capture`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(args),
+        });
+        if (!response.ok) {
+          const error = await response.text();
+          return { content: [{ type: 'text' as const, text: `Failed to capture: ${error}` }] };
+        }
+        const result = await response.json() as { status: string; id?: number };
+        return {
+          content: [{ type: 'text' as const, text: `Captured to agent-mem (ID: ${result.id}). Importance: 10, source: manual.` }]
+        };
+      } catch (error) {
+        return {
+          content: [{ type: 'text' as const, text: `Failed to capture: worker not reachable at ${WORKER_BASE_URL}` }]
+        };
+      }
+    }
   }
 ];
 

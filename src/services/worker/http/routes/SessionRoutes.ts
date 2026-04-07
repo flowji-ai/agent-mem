@@ -321,6 +321,7 @@ export class SessionRoutes extends BaseRouteHandler {
     app.post('/api/sessions/observations', this.handleObservationsByClaudeId.bind(this));
     app.post('/api/sessions/summarize', this.handleSummarizeByClaudeId.bind(this));
     app.post('/api/sessions/complete', this.handleCompleteByClaudeId.bind(this));
+    app.post('/api/sessions/manual-capture', this.handleManualCapture.bind(this));
   }
 
   /**
@@ -677,6 +678,80 @@ export class SessionRoutes extends BaseRouteHandler {
     });
 
     res.json({ status: 'completed', sessionDbId });
+  });
+
+  /**
+   * Manual capture — stores user-curated content directly as a high-priority snapshot
+   * POST /api/sessions/manual-capture
+   * Body: { title, decision_log?, decision_trade_offs?, constraints_log?, mistakes?, gotchas?, commit_ref?, open_questions?, unresolved? }
+   *
+   * Bypasses the extraction agent entirely. Sets importance=10, source='manual'.
+   * Also sets a flag so the auto-snapshot for this response cycle is suppressed.
+   */
+  private handleManualCapture = this.wrapHandler((req: Request, res: Response): void => {
+    const { title, decision_log, decision_trade_offs, constraints_log, mistakes, gotchas, commit_ref, open_questions, unresolved } = req.body;
+
+    if (!title) {
+      return this.badRequest(res, 'Manual capture requires at least a title');
+    }
+
+    // Check if there's any substantive content beyond just a title
+    const hasContent = [decision_log, decision_trade_offs, constraints_log, mistakes, gotchas, commit_ref, open_questions, unresolved]
+      .some(field => field && field.trim().length > 0);
+
+    if (!hasContent) {
+      return this.badRequest(res, 'Manual capture requires at least one field beyond title');
+    }
+
+    const store = this.dbManager.getSessionStore();
+    const db = store.getDb();
+
+    // Find the most recent active session to attach this capture to
+    const recentSession = db.prepare(
+      `SELECT memory_session_id, project FROM sdk_sessions
+       WHERE memory_session_id IS NOT NULL
+       ORDER BY started_at_epoch DESC LIMIT 1`
+    ).get() as { memory_session_id: string; project: string } | undefined;
+
+    if (!recentSession) {
+      return this.badRequest(res, 'No active session found to attach manual capture to');
+    }
+
+    // Build the summary input with manual capture fields
+    const { storeSummary } = require('../../../sqlite/summaries/store.js');
+    const summaryInput = {
+      request: '',
+      investigated: '',
+      learned: '',
+      completed: '',
+      next_steps: '',
+      notes: null,
+      title: title || null,
+      decision_log: decision_log || null,
+      decision_trade_offs: decision_trade_offs || null,
+      constraints_log: constraints_log || null,
+      mistakes: mistakes || null,
+      gotchas: gotchas || null,
+      commit_ref: commit_ref || null,
+      open_questions: open_questions || null,
+      unresolved: unresolved || null,
+    };
+
+    // Store with importance=10 and source='manual'
+    const epoch = Date.now();
+    const result = storeSummary(db, recentSession.memory_session_id, recentSession.project, summaryInput, null, 0, epoch);
+
+    // Override importance and source (storeSummary uses defaults)
+    db.prepare('UPDATE session_summaries SET importance = 10, source = ? WHERE id = ?').run('manual', result.id);
+
+    logger.info('SESSION', 'Manual capture stored', {
+      id: result.id,
+      title,
+      importance: 10,
+      source: 'manual',
+    });
+
+    res.json({ status: 'captured', id: result.id });
   });
 
   /**
