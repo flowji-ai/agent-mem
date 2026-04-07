@@ -24,7 +24,7 @@
       "Bash(git add:*)",
       "Bash(git commit:*)",
       "Bash(echo \"EXIT:$?\")",
-      "Bash(bash /Users/ostiimac/Forge/primary-vault/04-REPOSITORIES/04-REPOS-flowji-ai/agent-mem/.spectri/scripts/spectri-quality/create-issue.sh --slug \"specify-silent-no-draft-message\" --priority \"high\" --summary \"spec.specify reports ''No draft session found'' on first run, confusing users and derailing workflow \u2014 should only mention drafts when a draft file actually exists\" --agent \"Claude Opus\" --target-repo spectri)",
+      "Bash(bash /Users/ostiimac/Forge/primary-vault/04-REPOSITORIES/04-REPOS-flowji-ai/agent-mem/.spectri/scripts/spectri-quality/create-issue.sh --slug \"specify-silent-no-draft-message\" --priority \"high\" --summary \"spec.specify reports ''No draft session found'' on first run, confusing users and derailing workflow — should only mention drafts when a draft file actually exists\" --agent \"Claude Opus\" --target-repo spectri)",
       "mcp__pal__consensus",
       "Bash(bash /Users/ostiimac/Forge/primary-vault/04-REPOSITORIES/04-REPOS-flowji-ai/agent-mem/.spectri/scripts/shared/get-timestamp.sh)",
       "Bash(bash /Users/ostiimac/Forge/primary-vault/04-REPOSITORIES/04-REPOS-flowji-ai/agent-mem/.spectri/scripts/spectri-core/create-plan-scaffold.sh --json --spec \"001-phase-1-snapshot-fields\")",
@@ -32,7 +32,15 @@
       "Bash(bash /Users/ostiimac/Forge/primary-vault/04-REPOSITORIES/04-REPOS-flowji-ai/agent-mem/.spectri/scripts/spectri-trail/create-implementation-summary.sh --spec \"/Users/ostiimac/Forge/primary-vault/04-REPOSITORIES/04-REPOS-flowji-ai/agent-mem/spectri/specs/01-drafting/001-phase-1-snapshot-fields\" --scope \"plan.md\" --session-id \"Claude Opus\" --agent-name \"Claude Opus\" --session-start \"2026-03-23T09:00:00+11:00\")",
       "Bash(bash /Users/ostiimac/Forge/primary-vault/04-REPOSITORIES/04-REPOS-flowji-ai/agent-mem/.spectri/scripts/shared/validate-prerequisites.sh --json --spec \"001-phase-1-snapshot-fields\")",
       "Bash(bash /Users/ostiimac/Forge/primary-vault/04-REPOSITORIES/04-REPOS-flowji-ai/agent-mem/.spectri/scripts/shared/update-spec-meta.sh --spec \"/Users/ostiimac/Forge/primary-vault/04-REPOSITORIES/04-REPOS-flowji-ai/agent-mem/spectri/specs/01-drafting/001-phase-1-snapshot-fields\" --update-doc \"tasks.md\" --updated-by \"Claude Opus\")",
-      "Bash(bash /Users/ostiimac/Forge/primary-vault/04-REPOSITORIES/04-REPOS-flowji-ai/agent-mem/.spectri/scripts/spectri-trail/create-implementation-summary.sh --spec \"/Users/ostiimac/Forge/primary-vault/04-REPOSITORIES/04-REPOS-flowji-ai/agent-mem/spectri/specs/01-drafting/001-phase-1-snapshot-fields\" --scope \"tasks.md\" --session-id \"Claude Opus\" --agent-name \"Claude Opus\" --session-start \"2026-03-23T09:00:00+11:00\")"
+      "Bash(bash /Users/ostiimac/Forge/primary-vault/04-REPOSITORIES/04-REPOS-flowji-ai/agent-mem/.spectri/scripts/spectri-trail/create-implementation-summary.sh --spec \"/Users/ostiimac/Forge/primary-vault/04-REPOSITORIES/04-REPOS-flowji-ai/agent-mem/spectri/specs/01-drafting/001-phase-1-snapshot-fields\" --scope \"tasks.md\" --session-id \"Claude Opus\" --agent-name \"Claude Opus\" --session-start \"2026-03-23T09:00:00+11:00\")",
+      "Bash(bash .spectri/scripts/shared/validate-prerequisites.sh --json --require-tasks --include-tasks)",
+      "Bash(spectri --version)",
+      "Bash(pipx run:*)",
+      "Bash(pipx list:*)",
+      "Bash(pipx ensurepath:*)",
+      "Bash(python3 -m spectri_cli --version)",
+      "Bash(spectri update:*)",
+      "Bash(git push:*)"
     ],
     "deny": [
       "Read(./package-lock.json)",
@@ -54,38 +62,39 @@
     ],
     "PostToolUse": [
       {
+        "matcher": "Write",
         "hooks": [
           {
             "type": "command",
             "command": "bash .spectri/scripts/hooks/spec-folder-watchdog.sh",
             "timeout": 10
           }
-        ],
-        "matcher": "Write"
+        ]
       },
       {
+        "matcher": "Edit",
         "hooks": [
           {
             "type": "command",
             "command": "bash .spectri/scripts/hooks/spec-folder-watchdog.sh",
             "timeout": 10
           }
-        ],
-        "matcher": "Edit"
+        ]
       },
       {
+        "matcher": "Bash",
         "hooks": [
           {
             "type": "command",
             "command": "bash .spectri/scripts/hooks/postcommit-review-gate.sh",
             "timeout": 10
           }
-        ],
-        "matcher": "Bash"
+        ]
       }
     ],
     "PreToolUse": [
       {
+        "matcher": "Write",
         "hooks": [
           {
             "type": "command",
@@ -97,10 +106,10 @@
             "command": "bash .spectri/scripts/hooks/spec-folder-edit-guard.sh",
             "timeout": 10
           }
-        ],
-        "matcher": "Write"
+        ]
       },
       {
+        "matcher": "Edit",
         "hooks": [
           {
             "type": "command",
@@ -112,18 +121,17 @@
             "command": "bash .spectri/scripts/hooks/spec-folder-edit-guard.sh",
             "timeout": 10
           }
-        ],
-        "matcher": "Edit"
+        ]
       },
       {
+        "matcher": "Bash",
         "hooks": [
           {
             "type": "command",
             "command": "bash .spectri/scripts/hooks/bash-write-guard.sh",
             "timeout": 10
           }
-        ],
-        "matcher": "Bash"
+        ]
       }
     ],
     "SessionStart": [

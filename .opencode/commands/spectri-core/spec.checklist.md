@@ -1,7 +1,6 @@
 ---
 managed_by: spectri
 description: "Generate a custom checklist for the current feature based on user requirements."
-model: sonnet
 family: spectri-core
 origin:
   source: github-spec-kit
@@ -13,7 +12,7 @@ injections_applied:
   - summary-creation
   - finalization-verification
 build_info:
-  built_at: 2026-03-26T10:24:06Z
+  built_at: 2026-03-28T08:34:00Z
   manifest_version: 1.1.0
 ---
 # Generate Requirements Quality Checklist

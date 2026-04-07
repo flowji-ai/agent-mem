@@ -13,7 +13,7 @@ injections_applied:
   - meta-update
   - finalization-verification
 build_info:
-  built_at: 2026-03-26T10:24:04Z
+  built_at: 2026-03-28T08:33:58Z
   manifest_version: 1.1.0
 ---
 # Create Implementation Plan
@@ -57,10 +57,10 @@ You **MUST** consider the user input before proceeding (if not empty).
 
 2. **Load context**: Read FEATURE_SPEC and `spectri/constitution.md`. Load IMPL_PLAN template (already copied).
 
-2.5. **Phase Checkpoint** (skip if `--skip-checkpoint` flag present):
+3. **Phase Checkpoint** (skip if `--skip-checkpoint` flag present):
 
    **a. Check for skip flags**:
-   - If `$ARGUMENTS` contains `--skip-checkpoint`: Skip this entire Phase Checkpoint section and proceed to step 3
+   - If `$ARGUMENTS` contains `--skip-checkpoint`: Skip this entire Phase Checkpoint section and proceed to step 4
    - If `.spectri/config.json` exists and has `plan.skip_phase_checkpoint: true`: Skip unless `--with-checkpoint` flag is present
    - If skipping, log message: "Phase checkpoint skipped via [flag/config]"
 
@@ -177,7 +177,7 @@ You **MUST** consider the user input before proceeding (if not empty).
        ---
        ```
      * Insert this section after "## Summary" and before "## Technical Context"
-     * Proceed to step 3 (Execute plan workflow)
+     * Proceed to step 4 (Execute plan workflow)
 
    - **If "Request changes"**:
      * Ask for specific feedback: "Please describe which phases to modify and how:"
@@ -233,7 +233,7 @@ You **MUST** consider the user input before proceeding (if not empty).
      * Re-present all phases (not just revised ones)
      * Return to step e (Present phases)
 
-3. **Execute plan workflow**: Follow the structure in IMPL_PLAN template to:
+4. **Execute plan workflow**: Follow the structure in IMPL_PLAN template to:
    - Fill Technical Context (mark unknowns as "NEEDS CLARIFICATION")
    - Fill Constitution Check section: Read `spectri/constitution.md` **completely**. Create a table row for EVERY article and principle. Do not assume the count — the constitution grows over time. Missing articles is a critical plan defect.
    - **Fill Testing Principles section** (see Testing Principles guidance below)
@@ -244,7 +244,7 @@ You **MUST** consider the user input before proceeding (if not empty).
    - Phase 1: Update agent context by running the agent script
    - Re-evaluate Constitution Check post-design
 
-3.5. **ADR Suggestion Checkpoint** (after Phase 1 design completion):
+5. **ADR Suggestion Checkpoint** (after Phase 1 design completion):
 
    **Purpose**: Identify significant architectural decisions from the completed plan and suggest ADR creation to document them.
 
@@ -260,7 +260,7 @@ You **MUST** consider the user input before proceeding (if not empty).
    "$REPO_ROOT/.spectri/scripts/spectri-core/extract-decisions.sh" --plan "$IMPL_PLAN" > /tmp/decisions.json 2>&1
    ```
 
-   If extraction fails (no Technical Context found): Log "No architectural decisions found for ADR evaluation" and continue to step 4.
+   If extraction fails (no Technical Context found): Log "No architectural decisions found for ADR evaluation" and continue to step 6.
 
    **c. Apply clustering and significance testing**:
    Execute ADR suggestion script:
@@ -268,7 +268,7 @@ You **MUST** consider the user input before proceeding (if not empty).
    "$REPO_ROOT/.spectri/scripts/spectri-core/suggest-adrs.sh" --decisions /tmp/decisions.json > /tmp/adr-suggestions.json 2>&1
    ```
 
-   If no significant decisions found: Log "No decisions meet ADR significance criteria" and continue to step 4.
+   If no significant decisions found: Log "No decisions meet ADR significance criteria" and continue to step 6.
 
    **d. Present ADR suggestions to user**:
    Parse suggestions and present in formatted table:
@@ -324,27 +324,27 @@ You **MUST** consider the user input before proceeding (if not empty).
      * Parse result and display created ADRs
      * Log: "✅ Created [N] ADRs in spectri/adr/"
      * For each created ADR, add reference to plan.md References section
-     * Proceed to step 4
+     * Proceed to step 6
 
    - **If "Skip ADR creation"**:
      * Log: "ADR creation skipped by user"
-     * Proceed to step 4
+     * Proceed to step 6
 
    - **If "Select specific ADRs"**:
      * Present checkboxes for each suggested ADR
      * Use AskUserQuestion with multiSelect: true
      * Create only selected ADRs
      * Log: "✅ Created [N] of [M] suggested ADRs"
-     * Proceed to step 4
+     * Proceed to step 6
 
    **f. Error handling**:
    - Script not found: Log warning and continue (non-blocking)
    - Script execution failed: Log warning with error message and continue
    - ADR creation failed: Log warning for each failed ADR but continue with others
 
-4. **Stop and report**: Command ends after Phase 2 planning. Report branch, IMPL_PLAN path, and generated artifacts.
+6. **Stop and report**: Command ends after Phase 2 planning. Report branch, IMPL_PLAN path, and generated artifacts.
 
-5. **Update document metadata**: After plan.md is created or updated, track it in meta.json:
+7. **Update document metadata**: After plan.md is created or updated, track it in meta.json:
    ```bash
    .spectri/scripts/shared/update-spec-meta.sh \
      --spec "$SPECS_DIR" \

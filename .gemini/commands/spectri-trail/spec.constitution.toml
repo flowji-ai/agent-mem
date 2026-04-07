@@ -132,4 +132,3 @@ Before completing this command, verify:
 - [ ] **meta.json updated** (when applicable): `bash .spectri/scripts/shared/update-spec-meta.sh --spec "$SPEC_FOLDER" --updated-by "[session-id]"` (Only update meta.json when command modifies spec state, not during implementation phases)
 - [ ] **Work committed to git**: Commit using appropriate commands
 '''
-model = "opus"

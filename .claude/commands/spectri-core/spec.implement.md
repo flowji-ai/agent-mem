@@ -1,7 +1,6 @@
 ---
 managed_by: spectri
 description: "Execute the implementation plan by processing and executing all tasks defined in tasks.md"
-model: sonnet
 family: spectri-core
 origin:
   source: github-spec-kit
@@ -13,7 +12,7 @@ injections_applied:
   - summary-creation
   - finalization-verification
 build_info:
-  built_at: 2026-03-26T10:24:04Z
+  built_at: 2026-03-28T08:33:58Z
   manifest_version: 1.1.0
 ---
 # Execute Implementation Plan

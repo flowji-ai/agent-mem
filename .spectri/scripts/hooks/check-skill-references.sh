@@ -28,6 +28,11 @@ if [[ "$STAGED_ONLY" == true ]]; then
     fi
 fi
 
+# Skip if the test file does not exist (not in dev repo)
+if [[ ! -f "tests/unit/test_skill_references.py" ]]; then
+    exit 0
+fi
+
 # Run the skill references test module
 if ! uv run pytest tests/unit/test_skill_references.py -q --tb=short 2>&1; then
     echo "" >&2

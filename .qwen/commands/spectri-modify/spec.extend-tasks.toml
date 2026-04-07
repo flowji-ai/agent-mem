@@ -167,4 +167,3 @@ Before completing this command, verify:
 
 - Governing Spec: `spectri/specs/04-deployed/014-extend-tasks-module/spec.md`
 '''
-model = "sonnet"

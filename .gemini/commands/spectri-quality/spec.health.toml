@@ -175,4 +175,3 @@ Execution steps:
 - Related Spec: `spectri/specs/04-deployed/045-integrity-system/spec.md`
 - AGENTS.md Critical Rules: Folder naming, meta.json handling, work cycle
 '''
-model = "sonnet"

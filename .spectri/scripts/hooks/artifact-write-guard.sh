@@ -11,6 +11,9 @@
 # Output: JSON with decision "block" and reason, or empty for allow
 #
 # Spec: spectri/issues/2026-02-13-agents-bypass-commands-copy-existing-files.md
+#
+# Known limitation: Claude Code caches hook scripts at session start.
+# Mid-session edits to this file do NOT take effect until a new session.
 
 set -euo pipefail
 

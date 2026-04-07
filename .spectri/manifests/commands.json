@@ -11,7 +11,7 @@
     "injections[].content_file": "Path to content.md relative to src/injections/",
     "injections[].supports_params": "Boolean (default false) - if true, content.md may use {{PARAM}} placeholders",
     "commands": "Array of command composition definitions",
-    "commands[].id": "Command identifier matching output filename (e.g., 'spec.specify' \u2192 spec.specify.md)",
+    "commands[].id": "Command identifier matching output filename (e.g., 'spec.specify' → spec.specify.md)",
     "commands[].name": "Human-readable command name for documentation",
     "commands[].family": "Source folder: workflow-commands | spec-modification | quality-assurance | system-utilities | documentation",
     "commands[].category": "Output subfolder for sync: spectri-core | spectri-modify | spectri-quality | spectri-trail | spectri-specflow",
@@ -19,7 +19,6 @@
     "commands[].origin.upstream_url": "URL to upstream source file (required for github-spec-kit/spec-kit-plus, null for spectri)",
     "commands[].origin.adaptations": "Notes on what was changed from upstream (null if no changes)",
     "commands[].base_template": "Filename of base template in src/command-bases/spectri-{family}/ (e.g., 'specify.md')",
-    "commands[].model": "AI model to use: opus | sonnet | haiku (sets frontmatter model field)",
     "commands[].description": "Brief description shown in command help and frontmatter",
     "commands[].injections": "Array of injection references applied in order (first = closest to marker)",
     "commands[].injections[].injection_id": "References injections[].id - must exist in injections array",
@@ -80,10 +79,9 @@
       "origin": {
         "source": "github-spec-kit",
         "upstream_url": "https://github.com/github/spec-kit/blob/main/templates/commands/specify.md",
-        "adaptations": "Renamed speckit\u2192spectri, added branchless mode support, added checkpoint automation"
+        "adaptations": "Renamed speckit→spectri, added branchless mode support, added checkpoint automation"
       },
       "base_template": "specify.md",
-      "model": "opus",
       "description": "Create or update the feature specification from a natural language feature description.",
       "injections": [
         {
@@ -117,10 +115,9 @@
       "origin": {
         "source": "github-spec-kit",
         "upstream_url": "https://github.com/github/spec-kit/blob/main/templates/commands/plan.md",
-        "adaptations": "Renamed speckit\u2192spectri, added branchless mode support, added checkpoint automation"
+        "adaptations": "Renamed speckit→spectri, added branchless mode support, added checkpoint automation"
       },
       "base_template": "plan.md",
-      "model": "opus",
       "description": "Execute the implementation planning workflow using the plan template to generate design artifacts.",
       "injections": [
         {
@@ -154,10 +151,9 @@
       "origin": {
         "source": "github-spec-kit",
         "upstream_url": "https://github.com/github/spec-kit/blob/main/templates/commands/tasks.md",
-        "adaptations": "Renamed speckit\u2192spectri, added checkpoint automation, simplified summary creation"
+        "adaptations": "Renamed speckit→spectri, added checkpoint automation, simplified summary creation"
       },
       "base_template": "tasks.md",
-      "model": "sonnet",
       "description": "Generate an actionable, dependency-ordered tasks.md for the feature based on available design artifacts.",
       "injections": [
         {
@@ -191,10 +187,9 @@
       "origin": {
         "source": "github-spec-kit",
         "upstream_url": "https://github.com/github/spec-kit/blob/main/templates/commands/implement.md",
-        "adaptations": "Renamed speckit\u2192spectri, merged implement-phase functionality, simplified checkpoint"
+        "adaptations": "Renamed speckit→spectri, merged implement-phase functionality, simplified checkpoint"
       },
       "base_template": "implement.md",
-      "model": "sonnet",
       "description": "Execute the implementation plan by processing and executing all tasks defined in tasks.md",
       "injections": [
         {
@@ -224,7 +219,6 @@
         "adaptations": null
       },
       "base_template": "revise-spec.md",
-      "model": "sonnet",
       "description": "Iteratively refine user stories, FRs, or acceptance criteria in an existing spec.md with automatic frontmatter updates and implementation summary creation.",
       "injections": [
         {
@@ -254,7 +248,6 @@
         "adaptations": null
       },
       "base_template": "revise-plan.md",
-      "model": "sonnet",
       "description": "Iteratively refine the implementation approach in an existing plan.md to reflect changes in spec.md with automatic frontmatter updates, soft validation, and implementation summary creation.",
       "injections": [
         {
@@ -284,7 +277,6 @@
         "adaptations": null
       },
       "base_template": "extend-tasks.md",
-      "model": "sonnet",
       "description": "Extend an existing tasks.md by adding tasks to align with changes in plan.md (preserving existing tasks) with automatic frontmatter updates, soft validation, and implementation summary creation.",
       "injections": [
         {
@@ -312,10 +304,9 @@
       "origin": {
         "source": "github-spec-kit",
         "upstream_url": "https://github.com/github/spec-kit/blob/main/templates/commands/analyze.md",
-        "adaptations": "Renamed speckit\u2192spectri, simplified checkpoint from 35 lines to 2 lines"
+        "adaptations": "Renamed speckit→spectri, simplified checkpoint from 35 lines to 2 lines"
       },
       "base_template": "cross-check-alignment.md",
-      "model": "opus",
       "description": "Perform a non-destructive cross-artifact consistency and quality analysis across spec.md, plan.md, and tasks.md after task generation.",
       "injections": [
         {
@@ -345,7 +336,6 @@
         "adaptations": null
       },
       "base_template": "health.md",
-      "model": "sonnet",
       "description": "Detect structural drift in Spectri projects by verifying command sync, spec integrity, conventions, and cross-references.",
       "injections": [
         {
@@ -364,7 +354,6 @@
         "adaptations": null
       },
       "base_template": "validate.md",
-      "model": "sonnet",
       "description": "Validate specs for format, required sections, and consistency. Use pre-commit, in CI pipelines, or after changes to catch errors early.",
       "injections": [
         {
@@ -380,10 +369,9 @@
       "origin": {
         "source": "github-spec-kit",
         "upstream_url": "https://github.com/github/spec-kit/blob/main/templates/commands/clarify.md",
-        "adaptations": "Renamed speckit\u2192spectri, simplified checkpoint from 35 lines to 2 lines"
+        "adaptations": "Renamed speckit→spectri, simplified checkpoint from 35 lines to 2 lines"
       },
       "base_template": "clarify.md",
-      "model": "opus",
       "description": "Identify underspecified areas in the current feature spec by asking up to 5 highly targeted clarification questions and encoding answers back into the spec.",
       "injections": [
         {
@@ -411,10 +399,9 @@
       "origin": {
         "source": "github-spec-kit",
         "upstream_url": "https://github.com/github/spec-kit/blob/main/templates/commands/checklist.md",
-        "adaptations": "Renamed speckit\u2192spectri, simplified checkpoint from 35 lines to 2 lines"
+        "adaptations": "Renamed speckit→spectri, simplified checkpoint from 35 lines to 2 lines"
       },
       "base_template": "checklist.md",
-      "model": "sonnet",
       "description": "Generate a custom checklist for the current feature based on user requirements.",
       "injections": [
         {
@@ -444,7 +431,6 @@
         "adaptations": null
       },
       "base_template": "issue.md",
-      "model": "sonnet",
       "description": "Create GitHub issue from rapid capture (verbal/screenshot) or structured input",
       "injections": [
         {
@@ -462,7 +448,6 @@
         "adaptations": null
       },
       "base_template": "taskstoissues.md",
-      "model": "sonnet",
       "description": "Convert existing tasks into actionable, dependency-ordered GitHub issues for the feature based on available design artifacts.",
       "injections": [
         {
@@ -492,7 +477,6 @@
         "adaptations": null
       },
       "base_template": "adr.md",
-      "model": "opus",
       "description": "Create Architecture Decision Record (ADR) to document significant architectural decisions",
       "injections": [
         {
@@ -514,7 +498,6 @@
         "adaptations": null
       },
       "base_template": "spec-agentsmd.md",
-      "model": "sonnet",
       "description": "Create or update spec-level AGENTS.md to track incomplete work state for multi-agent handoffs",
       "injections": [
         {
@@ -535,7 +518,6 @@
         "adaptations": null
       },
       "base_template": "summary.md",
-      "model": "sonnet",
       "description": "Create implementation summary for recent work when automatic creation was missed",
       "injections": [
         {
@@ -554,10 +536,9 @@
       "origin": {
         "source": "github-spec-kit",
         "upstream_url": "https://github.com/github/spec-kit/blob/main/templates/commands/constitution.md",
-        "adaptations": "Renamed speckit\u2192spectri, simplified checkpoint from 35 lines to 2 lines"
+        "adaptations": "Renamed speckit→spectri, simplified checkpoint from 35 lines to 2 lines"
       },
       "base_template": "constitution.md",
-      "model": "opus",
       "description": "Create or update the project constitution from interactive or provided principle inputs, ensuring all dependent templates stay in sync.",
       "injections": [
         {
@@ -587,7 +568,6 @@
         "adaptations": null
       },
       "base_template": "update-meta.md",
-      "model": "sonnet",
       "description": "Update spec meta.json fields interactively or via arguments, wrapping update-spec-meta.sh for user-friendly metadata management.",
       "injections": [
         {
@@ -608,7 +588,6 @@
         "adaptations": null
       },
       "base_template": "create-command.md",
-      "model": "sonnet",
       "ships_with_product": false,
       "description": "Create a new Spectri command following Spec Kit format standards and pedagogical design principles.",
       "injections": [
@@ -625,10 +604,9 @@
       "origin": {
         "source": "github-spec-kit",
         "upstream_url": "https://github.com/github/spec-kit/blob/main/templates/commands/document.md",
-        "adaptations": "Renamed speckit\u2192spectri, renamed document\u2192retro, added discovery framework"
+        "adaptations": "Renamed speckit→spectri, renamed document→retro, added discovery framework"
       },
       "base_template": "retro.md",
-      "model": "sonnet",
       "description": "Create a retrospective spec for an already-implemented feature. Documents what EXISTS, not what SHOULD exist.",
       "injections": [
         {
@@ -664,7 +642,6 @@
         "adaptations": null
       },
       "base_template": "rfc.md",
-      "model": "sonnet",
       "description": "Create or update Request for Comments (RFC) to document pre-decision architectural proposals",
       "injections": [
         {
@@ -685,7 +662,6 @@
         "adaptations": null
       },
       "base_template": "update-spectri-md.md",
-      "model": "sonnet",
       "ships_with_product": false,
       "description": "Validate and deploy SPECTRI.md sections from single source file",
       "injections": []

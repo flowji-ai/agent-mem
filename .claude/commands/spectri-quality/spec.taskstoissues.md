@@ -1,7 +1,6 @@
 ---
 managed_by: spectri
 description: "Convert existing tasks into actionable, dependency-ordered GitHub issues for the feature based on available design artifacts."
-model: sonnet
 family: spectri-quality
 origin:
   source: spectri
@@ -11,7 +10,7 @@ injections_applied:
   - summary-creation
   - finalization-verification
 build_info:
-  built_at: 2026-03-26T10:24:06Z
+  built_at: 2026-03-28T08:34:00Z
   manifest_version: 1.1.0
 ---
 # Convert Tasks to GitHub Issues

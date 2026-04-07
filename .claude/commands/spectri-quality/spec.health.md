@@ -1,14 +1,13 @@
 ---
 managed_by: spectri
 description: "Detect structural drift in Spectri projects by verifying command sync, spec integrity, conventions, and cross-references."
-model: sonnet
 family: spectri-quality
 origin:
   source: spectri
 injections_applied:
   - user-input
 build_info:
-  built_at: 2026-03-26T10:24:06Z
+  built_at: 2026-03-28T08:33:59Z
   manifest_version: 1.1.0
 ---
 

@@ -7,7 +7,7 @@ origin:
 injections_applied:
   - user-input
 build_info:
-  built_at: 2026-03-26T10:24:06Z
+  built_at: 2026-03-28T08:34:00Z
   manifest_version: 1.1.0
 ---
 
@@ -77,7 +77,7 @@ Execution steps:
    - Validation: Priority must be one of: critical, high, medium, low
    - If invalid, re-prompt with criteria
 
-1.5. **[INTERNAL TESTING — remove after 2026-04-15] Determine target repository**: Review the conversation context for signals that this issue relates to the Spectri framework itself rather than the current project.
+2. **[INTERNAL TESTING — remove after 2026-04-15] Determine target repository**: Review the conversation context for signals that this issue relates to the Spectri framework itself rather than the current project.
 
    **Spectri framework signals**: mentions of Spectri commands (`/spec.*`), skills, scripts, `.spectri/` infrastructure, build pipeline, `SPECTRI.md`, `create-issue.sh`, `resolve-issue.sh`, spec.issue command behaviour, etc.
 
@@ -88,7 +88,7 @@ Execution steps:
    - If A → set `TARGET_REPO=spectri`, pass `--target-repo spectri` to create-issue.sh
    - If B → set `TARGET_REPO=current`, pass `--target-repo current` to create-issue.sh (or omit, it's the default)
 
-2. **Determine input method**: Ask user how they want to provide issue details
+3. **Determine input method**: Ask user how they want to provide issue details
 
    **Three options**:
    - **Option A - Verbal description**: User describes the problem, agent drafts summary
@@ -102,7 +102,7 @@ Execution steps:
 
    Based on their response, follow either Option A, Option B, or Option C below.
 
-3. **Option A - Verbal description path**:
+4. **Option A - Verbal description path**:
 
    a. **Collect issue description**: Ask user to describe the problem
       - **Ask**: "Please describe the issue. What's broken or needs fixing?"
@@ -143,11 +143,11 @@ Execution steps:
       Does this look correct? (yes to proceed, or provide corrections)
       ```
 
-      - If user says yes/correct/looks good → proceed to step 4
+      - If user says yes/correct/looks good → proceed to step 6
       - If user provides corrections → update summary/slug and re-show
       - If user is unclear → ask specifically what to change
 
-4. **Option B - Screenshot path**:
+5. **Option B - Screenshot path**:
 
    a. **Collect screenshot path**: Ask for screenshot file path
       - **Ask**: "Please provide the path to the screenshot file"
@@ -181,7 +181,7 @@ Execution steps:
       Does this look correct? (yes to proceed, or provide corrections)
       ```
 
-4. **Option C - Agent synthesis from conversation (if user chooses Option C)**:
+5. **Option C - Agent synthesis from conversation (if user chooses Option C)**:
 
    a. **Review conversation context**: Review conversation history to understand the issue
 
@@ -203,7 +203,7 @@ Execution steps:
       Does this accurately capture the issue?
       ```
 
-   e. **Handle feedback**: If user approves, proceed to Step 5; if user requests changes, revise and show again
+   e. **Handle feedback**: If user approves, proceed to Step 6; if user requests changes, revise and show again
 
    **Example**:
    ```
@@ -219,10 +219,10 @@ Execution steps:
 
    User: Perfect
 
-   Agent: [Proceeds to Step 5]
+   Agent: [Proceeds to Step 6]
    ```
 
-5. **Invoke creation script**: Call create-issue.sh with collected parameters
+6. **Invoke creation script**: Call create-issue.sh with collected parameters
 
    **Script invocation**:
    ```bash
@@ -247,9 +247,9 @@ Execution steps:
    - If script returns non-zero exit code, ERROR "Failed to create issue: [error message]"
    - If script output doesn't contain file path, ERROR "Issue creation failed - no file path returned"
 
-6. **Detail completion (conditional)**: Behavior depends on which input method was chosen
+7. **Detail completion (conditional)**: Behavior depends on which input method was chosen
 
-   **Step 6A - For Option A (verbal) or Option B (screenshot)**:
+   **Step 7A - For Option A (verbal) or Option B (screenshot)**:
 
    Ask the user if they want to complete details now or defer:
    ```
@@ -273,7 +273,7 @@ Execution steps:
    **If user chooses B (defer)**:
    - Report: "Issue created: [file-path]. Status: identified. The issue can be completed later by manually editing the file."
 
-   **Step 6B - For Option C (agent synthesis)**:
+   **Step 7B - For Option C (agent synthesis)**:
 
    **Do NOT ask user** whether to complete details. Automatically complete using conversation context:
 

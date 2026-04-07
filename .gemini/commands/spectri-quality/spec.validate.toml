@@ -217,4 +217,3 @@ Execution steps:
 - Spec Template: `.spectri/templates/spectri-core/spec-template.md`
 - Plan Template: `.spectri/templates/spectri-core/plan-template.md`
 '''
-model = "sonnet"

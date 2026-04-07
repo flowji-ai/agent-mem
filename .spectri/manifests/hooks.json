@@ -105,15 +105,6 @@
       "agents": ["claude"]
     },
     {
-      "id": "bash-write-guard",
-      "description": "Blocks Bash commands that write to spectri/ artifact directories",
-      "event": "PreToolUse",
-      "matcher": "Bash",
-      "command": "bash .spectri/scripts/hooks/bash-write-guard.sh",
-      "timeout": 10,
-      "agents": ["claude"]
-    },
-    {
       "id": "stop-completion-gate",
       "description": "Advisory check for missing implementation summary or spec update before completion",
       "event": "Stop",

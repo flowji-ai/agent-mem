@@ -1,7 +1,6 @@
 ---
 managed_by: spectri
 description: "Iteratively refine user stories, FRs, or acceptance criteria in an existing spec.md with automatic frontmatter updates and implementation summary creation."
-model: sonnet
 family: spectri-modify
 origin:
   source: spectri
@@ -11,7 +10,7 @@ injections_applied:
   - summary-creation
   - finalization-verification
 build_info:
-  built_at: 2026-03-26T10:24:05Z
+  built_at: 2026-03-28T08:33:58Z
   manifest_version: 1.1.0
 ---
 
