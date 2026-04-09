@@ -40,12 +40,43 @@
       "Bash(pipx ensurepath:*)",
       "Bash(python3 -m spectri_cli --version)",
       "Bash(spectri update:*)",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "Bash(SKIP_TEST_CHECK=1 git push)",
+      "Bash(.spectri/scripts/shared/update-spec-meta.sh --spec spectri/specs/01-drafting/001-phase-1-snapshot-fields --status in-progress)",
+      "Bash(bun --version)",
+      "Bash(bun test:*)",
+      "Bash(bash .spectri/scripts/spectri-core/create-backlog-item.sh --type notes --short-name \"semver-versioning\" \"Add semver versioning convention to agent-mem\")",
+      "Bash(sqlite3 :memory: \"\")",
+      "Bash(bun -e ':*)",
+      "Bash(sqlite3 ~/.claude-mem/claude-mem.db \"PRAGMA table_info\\(session_summaries\\)\")",
+      "Bash(claude plugins:*)",
+      "Bash(kill 25504)",
+      "Bash(sqlite3 ~/.claude-mem/claude-mem.db \"SELECT version FROM schema_versions ORDER BY version DESC LIMIT 5;\")",
+      "Bash(bun run:*)",
+      "Bash(bun install:*)",
+      "Bash(kill 9227)",
+      "Bash(cp plugin/scripts/worker-service.cjs __TRACKED_VAR__/scripts/)",
+      "Bash(cp plugin/scripts/mcp-server.cjs __TRACKED_VAR__/scripts/)",
+      "Bash(cp plugin/scripts/context-generator.cjs __TRACKED_VAR__/scripts/)",
+      "Bash(cp plugin/ui/viewer-bundle.js __TRACKED_VAR__/ui/)",
+      "Bash(cp plugin/ui/viewer.html __TRACKED_VAR__/ui/)",
+      "Bash(sqlite3 ~/.claude-mem/claude-mem.db \"SELECT version FROM schema_versions WHERE version = 24;\")",
+      "Bash(sqlite3 ~/.claude-mem/claude-mem.db \"SELECT id, substr\\(title, 1, 60\\) as title, source, importance, created_at FROM session_summaries ORDER BY id DESC LIMIT 5;\")",
+      "Bash(sqlite3 ~/.claude-mem/claude-mem.db \"SELECT version FROM schema_versions ORDER BY version DESC LIMIT 3;\")",
+      "Bash(sqlite3 ~/.claude-mem/claude-mem.db \"SELECT id, substr\\(request, 1, 80\\) as request, title, source, created_at FROM session_summaries ORDER BY id DESC LIMIT 5;\")",
+      "Bash(ollama list:*)",
+      "Bash(ollama show:*)",
+      "Bash(ollama pull:*)",
+      "Bash(curl -s https://ollama.com/api/tags/gemma4)",
+      "Bash(sqlite3 ~/.claude-mem/claude-mem.db \"SELECT id, title, decision_log, mistakes, source, created_at FROM session_summaries WHERE title IS NOT NULL ORDER BY id DESC LIMIT 5;\")"
     ],
     "deny": [
       "Read(./package-lock.json)",
       "Read(./node_modules/**)",
       "Read(./.DS_Store)"
+    ],
+    "additionalDirectories": [
+      "/Users/ostiimac/.claude-mem"
     ]
   },
   "hooks": {
