@@ -28,8 +28,11 @@ import {
   type WorkerRef
 } from './agents/index.js';
 
-// OpenRouter API endpoint
-const OPENROUTER_API_URL = 'https://openrouter.ai/api/v1/chat/completions';
+// OpenRouter API endpoint — configurable to support Ollama (localhost:11434)
+function getOpenRouterApiUrl(): string {
+  const settings = SettingsDefaultsManager.loadFromFile(USER_SETTINGS_PATH);
+  return settings.CLAUDE_MEM_OPENROUTER_BASE_URL || 'https://openrouter.ai/api/v1/chat/completions';
+}
 
 // Context window management constants (defaults, overridable via settings)
 const DEFAULT_MAX_CONTEXT_MESSAGES = 20;  // Maximum messages to keep in conversation history
@@ -367,7 +370,8 @@ export class OpenRouterAgent {
       estimatedTokens
     });
 
-    const response = await fetch(OPENROUTER_API_URL, {
+    const apiUrl = getOpenRouterApiUrl();
+    const response = await fetch(apiUrl, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${apiKey}`,
