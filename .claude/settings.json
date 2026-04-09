@@ -153,16 +153,6 @@
             "timeout": 10
           }
         ]
-      },
-      {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash .spectri/scripts/hooks/bash-write-guard.sh",
-            "timeout": 10
-          }
-        ]
       }
     ],
     "SessionStart": [
