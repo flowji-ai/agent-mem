@@ -38,7 +38,7 @@ export function SummaryCard({ summary }: SummaryCardProps) {
       <header className="summary-card-header">
         <div className="summary-badge-row">
           <span className={`card-type summary-badge${isManual ? ' summary-badge--manual' : ''}`}>
-            {isManual ? '📌 Manual Capture' : 'Session Summary'}
+            {isManual ? '📌 Manual Capture' : 'Snapshot'}
           </span>
           <span className="summary-project-badge">{summary.project}</span>
           {summary.importance && summary.importance >= 9 && (
