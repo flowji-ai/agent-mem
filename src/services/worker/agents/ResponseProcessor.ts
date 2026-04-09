@@ -13,6 +13,7 @@
 
 import { logger } from '../../../utils/logger.js';
 import { parseObservations, parseSummary, type ParsedObservation, type ParsedSummary } from '../../../sdk/parser.js';
+import type { SummaryInput } from '../../sqlite/summaries/types.js';
 import { updateCursorContextForProject } from '../../integrations/CursorHooksInstaller.js';
 import { updateFolderClaudeMdFiles } from '../../../utils/claude-md-utils.js';
 import { getWorkerPort } from '../../../shared/worker-utils.js';
@@ -154,14 +155,7 @@ export async function processAgentResponse(
 /**
  * Normalize summary for storage (convert null fields to empty strings)
  */
-function normalizeSummaryForStorage(summary: ParsedSummary | null): {
-  request: string;
-  investigated: string;
-  learned: string;
-  completed: string;
-  next_steps: string;
-  notes: string | null;
-} | null {
+function normalizeSummaryForStorage(summary: ParsedSummary | null): SummaryInput | null {
   if (!summary) return null;
 
   return {
@@ -170,7 +164,17 @@ function normalizeSummaryForStorage(summary: ParsedSummary | null): {
     learned: summary.learned || '',
     completed: summary.completed || '',
     next_steps: summary.next_steps || '',
-    notes: summary.notes
+    notes: summary.notes,
+    // Phase 1 structured fields
+    title: summary.title || null,
+    decision_log: summary.decision_log || null,
+    decision_trade_offs: summary.decision_trade_offs || null,
+    constraints_log: summary.constraints_log || null,
+    mistakes: summary.mistakes || null,
+    gotchas: summary.gotchas || null,
+    commit_ref: summary.commit_ref || null,
+    open_questions: summary.open_questions || null,
+    unresolved: summary.unresolved || null,
   };
 }
 
