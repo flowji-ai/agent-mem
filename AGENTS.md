@@ -13,14 +13,26 @@ Date Updated: 2026-03-24T00:00:00Z
 
 **Status as of 2026-03-24:** Refactoring complete, Phase 1 spec ready, but integration testing required before proceeding.
 
-**Smoke tests passed 2026-03-24:**
+**Status as of 2026-04-10:** Phase 1 implementation complete, deployed as local plugin, not yet validated with live usage.
 
-1. `bun test` — 1029 pass, 21 pre-existing failures, 0 regressions from refactor
-2. Worker boots on port 37777, viewer serves HTML
-3. DB has 71 snapshots, including agent-mem sessions with real content (not corrupted)
-4. Schema intact (14 columns, unchanged — Phase 1 migration not yet run)
+**What's done:**
+- Migration 24 deployed (12 new columns on session_summaries)
+- `agent-workflow.json` mode created (structured prompt, discovery removed, mistake type added)
+- Parser updated for new XML fields
+- ResponseProcessor fixed (was passing 14 values to 26-column INSERT)
+- Plugin installed as local marketplace (`claude-mem@thedotmack` pointing at our fork)
+- Switched from Gemini to **Ollama local** (`gemma4:31b`) — no rate limits, no API costs
+- Viewer: prompts hidden, "Session Summary" renamed to "Snapshot"
+- Worker runs on port **37888** (changed from 37777)
+- 1077 tests pass (48 new), 0 regressions
 
-**Next step:** `/spec.implement` against `spectri/specs/01-drafting/001-phase-1-snapshot-fields/`
+**What hasn't been tested yet:**
+- No live sessions have been run long enough to verify structured snapshots appear in the viewer
+- Manual capture MCP tool (`capture_to_mem`) not tested live
+- Context injection of new fields into future sessions not verified
+- Gemma 4 31b extraction quality unknown — may need to switch to `qwen3-coder:30b`
+
+**Next step:** Run real sessions, check `localhost:37888`, verify structured fields populate. Then Phase 6 (E2E validation tasks T053-T062).
 
 ## Recent Codebase Refactor (2026-03-23)
 
